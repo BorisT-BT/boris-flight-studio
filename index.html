@@ -1,0 +1,4519 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Boris Flight Studio | Camera Drones</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: white;
+  color: #202124;
+  font: 16px/1.5 Arial, Helvetica, sans-serif;
+}
+
+button, input, select, textarea {
+  font: inherit;
+}
+
+button, a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #147ad6;
+  outline-offset: 4px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 20px 4vw;
+  border-bottom: 1px solid #eee;
+}
+
+.brand {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -.5px;
+  text-decoration: none;
+}
+
+.brand small {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #777;
+}
+
+nav {
+  display: flex;
+  gap: 24px;
+}
+
+nav a {
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.note {
+  text-align: center;
+  background: #f5f5f5;
+  padding: 10px 20px;
+  font-size: 12px;
+  color: #616161;
+}
+
+.models {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  padding: 24px 4vw;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #eee;
+}
+
+.models button {
+  background: none;
+  border: 0;
+  padding: 8px;
+  color: #555;
+  font-size: 14px;
+}
+
+.models button:hover {
+  color: #006dcc;
+}
+
+.intro {
+  text-align: center;
+  padding: 60px 20px 48px;
+}
+
+.intro h1 {
+  font-size: clamp(38px, 5vw, 66px);
+  letter-spacing: -2px;
+  line-height: 1.05;
+  margin: 0 0 20px;
+}
+
+.intro p {
+  color: #666;
+  margin: 0;
+  font-size: 19px;
+}
+
+.catalogue {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0 12px;
+}
+
+.drone {
+  background: #f4f5f6;
+  overflow: hidden;
+  min-width: 0;
+  padding: 34px clamp(20px, 3vw, 50px);
+  display: flex;
+  flex-direction: column;
+}
+
+.drone.featured {
+  background: #eaf0f3;
+}
+
+.kicker {
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 1.3px;
+}
+
+.drone h2 {
+  margin: 8px 0 0;
+  font-size: clamp(28px, 3vw, 44px);
+  letter-spacing: -1px;
+  line-height: 1.15;
+}
+
+.drone p {
+  margin: 9px 0;
+  color: #666;
+}
+
+.product {
+  border: 0;
+  background: transparent;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  padding: 15px;
+  margin: 12px 0;
+  min-height: 250px;
+}
+
+.product img {
+  display: block;
+  width: 100%;
+  height: 260px;
+  object-fit: contain;
+  transition: transform .35s;
+}
+
+.product:hover img {
+  transform: translateY(-7px) scale(1.025);
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: auto;
+  flex-wrap: wrap;
+}
+
+.availability {
+  font-size: 13px;
+  color: #64676b;
+}
+
+.featured .availability {
+  color: #26753b;
+}
+
+.pill {
+  background: #202124;
+  border: 1px solid #202124;
+  border-radius: 30px;
+  color: white;
+  padding: 12px 23px;
+  min-height: 46px;
+  font-size: 14px;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.pill:hover {
+  background: #414348;
+}
+
+.media {
+  background: #111;
+  color: white;
+  padding: 65px 5vw;
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 45px;
+  align-items: center;
+}
+
+.media h2 {
+  font-size: clamp(30px, 4vw, 48px);
+  letter-spacing: -1px;
+  line-height: 1.1;
+  margin: 12px 0;
+}
+
+.media p {
+  color: #b7b7b7;
+}
+
+.trailer {
+  display: grid;
+  place-items: center;
+  position: relative;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  border-radius: 8px;
+text-decoration: none;
+  background:
+    #24282c
+    url("https://videocaption.djicdn.com/poster/20251030/e240381995ef5343a0617f0abe3459f3.jpg")
+    center / cover;
+}
+
+.trailer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(transparent, #0009);
+}
+
+.play {
+  position: relative;
+  background: #111b;
+  border: 1px solid #ffffff99;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 25px;
+  color: white;
+}
+
+.caption {
+  position: absolute;
+  left: 20px;
+  bottom: 16px;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.fine {
+  font-size: 12px;
+  color: #777;
+}
+
+.media .fine {
+  color: #aaa;
+}
+
+.media a:not(.trailer) {
+  color: #c2ddf8;
+  text-underline-offset: 5px;
+}
+
+.how {
+  padding: 55px 5vw;
+}
+
+.how h2 {
+  font-size: 30px;
+  letter-spacing: -1px;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+.steps h3 {
+  font-size: 18px;
+}
+
+.steps p {
+  color: #666;
+  font-size: 14px;
+}
+
+footer {
+  padding: 28px 5vw;
+  border-top: 1px solid #ddd;
+  font-size: 12px;
+  color: #666;
+}
+
+dialog {
+  border: 0;
+  border-radius: 16px;
+  padding: 30px;
+  width: min(580px, calc(100% - 30px));
+  max-height: 90vh;
+  overflow: auto;
+  color: #202124;
+  background: white;
+  box-shadow: 0 25px 100px #0005;
+}
+
+dialog::backdrop {
+  background: #0008;
+  backdrop-filter: blur(5px);
+}
+
+.dialog-top {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.dialog-top h2 {
+  margin: 0;
+  font-size: 27px;
+  letter-spacing: -.7px;
+}
+
+.close {
+  border: 1px solid #ddd;
+  background: #f4f4f4;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  font-size: 22px;
+}
+
+.dialog-copy {
+  color: #666;
+  font-size: 14px;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: bold;
+  margin-top: 15px;
+}
+
+input, textarea, select {
+  display: block;
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  background: white;
+  color: #202124;
+  min-height: 45px;
+}
+
+textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.check {
+  display: flex;
+  gap: 10px;
+  font-weight: normal;
+}
+
+.check input {
+  width: 18px;
+  min-height: 18px;
+  margin: 2px 0;
+  flex-shrink: 0;
+}
+
+.submit {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.request {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #ddd;
+}
+
+#copyStatus {
+  font-size: 13px;
+  color: #26753b;
+}
+
+.unavailable-icon {
+  font-size: 35px;
+  margin: 10px 0;
+}
+
+#unavailable .pill {
+  margin-top: 12px;
+}
+
+.disclaimer {
+  padding: 0 5vw 35px;
+  color: #666;
+  font-size: 13px;
+}
+
+@media (max-width: 700px) {
+  header {
+    padding: 16px 20px;
+  }
+
+  nav {
+    gap: 14px;
+  }
+
+  nav a {
+    font-size: 12px;
+  }
+
+  .models {
+    gap: 10px;
+    padding: 15px 8px;
+  }
+
+  .intro {
+    padding: 40px 20px;
+  }
+
+  .intro p {
+    font-size: 16px;
+  }
+
+  .catalogue {
+    grid-template-columns: 1fr;
+    padding: 0 8px;
+    gap: 8px;
+  }
+
+  .drone {
+    padding: 26px 22px;
+  }
+
+  .product img {
+    height: 220px;
+  }
+
+  .product {
+    min-height: 220px;
+  }
+
+  .media {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 35px 22px;
+  }
+
+  .steps {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .row {
+    grid-template-columns: 1fr;
+  }
+
+  dialog {
+    padding: 23px;
+  }
+
+  .brand {
+    font-size: 15px;
+  }
+
+  .intro h1 {
+    letter-spacing: -1px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product img {
+    transition: none;
+  }
+
+  .product:hover img {
+    transform: none;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <a class="brand" href="#">
+    BORIS FLIGHT STUDIO
+    <small>INDEPENDENT DRONE FILMING</small>
+  </a>
+
+  <nav aria-label="Main navigation">
+    <a href="#drones">Drones</a>
+    <a href="#film">Watch video</a>
+  </nav>
+</header>
+
+<div class="note">
+  Independent booking-request website.
+  Not DJI or an authorised DJI booking service.
+</div>
+
+<div class="models" aria-label="Choose a drone">
+<button data-model="DJI Mavic 4 Pro">DJI Mavic 4 Pro</button>
+  <button data-model="DJI Mini 5 Pro">DJI Mini 5 Pro</button>
+  <button data-model="DJI Avata 360">DJI Avata 360</button>
+  <button data-model="DJI Neo 2">DJI Neo 2</button>
+</div>
+
+<main>
+
+  <section class="intro" id="drones">
+    <h1>Camera drones.<br>Your next perspective.</h1>
+    <p>Explore the drones. Choose your flight.</p>
+  </section>
+
+  <div class="catalogue">
+
+    <article class="drone">
+      <div class="kicker">Triple-lens camera drone</div>
+      <h2>DJI Mavic 4 Pro</h2>
+      <p>A bigger view of your world.</p>
+
+      <button
+        class="product"
+        data-model="DJI Mavic 4 Pro"
+        aria-label="Select DJI Mavic 4 Pro"
+      >
+        <img
+          src="https://www-cdn.djiits.com/cms/uploads/979ab68fd602bd3440fc4fb12f3ea38e.png"
+          alt="DJI Mavic 4 Pro"
+        >
+      </button>
+
+      <div class="actions">
+        <span class="availability">Not currently bookable</span>
+        <button class="pill" data-model="DJI Mavic 4 Pro">
+          Book a flight
+        </button>
+      </div>
+    </article>
+
+    <article class="drone">
+      <div class="kicker">Compact camera drone</div>
+      <h2>DJI Mini 5 Pro</h2>
+      <p>Small size. Fresh possibilities.</p>
+
+      <button
+        class="product"
+        data-model="DJI Mini 5 Pro"
+        aria-label="Select DJI Mini 5 Pro"
+      >
+        <img
+          src="https://www-cdn.djiits.com/cms/uploads/3462d29fa23cf5d29fce9171fb2b6b9d.png"
+          alt="DJI Mini 5 Pro"
+        >
+      </button>
+
+      <div class="actions">
+        <span class="availability">Not currently bookable</span>
+        <button class="pill" data-model="DJI Mini 5 Pro">
+          Book a flight
+        </button>
+      </div>
+    </article>
+
+    <article class="drone">
+      <div class="kicker">Immersive camera drone</div>
+      <h2>DJI Avata 360</h2>
+      <p>A different way to see the scene.</p>
+
+      <button
+        class="product"
+        data-model="DJI Avata 360"
+        aria-label="Select DJI Avata 360"
+      >
+        <img
+          src="https://www-cdn.djiits.com/cms/uploads/19c15ba39f4574808ca6b0380b7d44dc.png"
+          alt="DJI Avata 360"
+          loading="lazy"
+        >
+      </button>
+
+      <div class="actions">
+        <span class="availability">Not currently bookable</span>
+        <button class="pill" data-model="DJI Avata 360">
+          Book a flight
+        </button>
+      </div>
+    </article>
+
+    <article class="drone featured">
+      <div class="kicker">Follow-me camera drone</div>
+      <h2>DJI Neo 2</h2>
+      <p>Your idea. A fresh perspective.</p>
+
+      <button
+        class="product"
+        data-model="DJI Neo 2"
+        aria-label="Select DJI Neo 2"
+      >
+        <img
+          src="https://www-cdn.djiits.com/cms/uploads/c108f7561fdb680e96523c11e959c1cf.png"
+          alt="DJI Neo 2"
+          loading="lazy"
+        >
+      </button>
+
+      <div class="actions">
+        <span class="availability">
+          Booking requests open · from £10
+        </span>
+        <button class="pill" data-model="DJI Neo 2">
+          Book a flight
+        </button>
+      </div>
+    </article>
+
+  </div>
+
+  <section class="media" id="film">
+
+    <a
+      class="trailer"
+      href="https://cdn.djivideos.com/watch/b9f766e5-1d6e-425f-bfdc-3b0c2bd2ab40?autoplay=false"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Watch the official DJI Neo 2 trailer in a new tab"
+    >
+      <span class="play" aria-hidden="true">▶️</span>
+      <span class="caption">
+        DJI NEO 2 / OFFICIAL TRAILER ↗️
+      </span>
+    </a>
+
+    <div>
+      <div class="kicker">OFFICIAL DJI FILM</div>
+      <h2>Meet the Neo 2.</h2>
+
+      <p>
+        See the camera in action, then plan your own filming session.
+      </p>
+
+      <p class="fine">
+        Manufacturer footage by DJI—not filmed by Boris.
+        Demonstrated shots are not guaranteed for your session.
+        Opens in a new tab; no autoplay.
+      </p>
+
+      <a
+        href="https://www.dji.com/uk/neo-2/video"
+target="_blank"
+        rel="noopener noreferrer"
+      >
+        Explore more DJI videos ↗️
+      </a>
+    </div>
+
+  </section>
+
+  <section class="how">
+    <h2>From idea to filming.</h2>
+
+    <div class="steps">
+      <div>
+        <h3>01. Choose Neo 2</h3>
+        <p>
+          Only Neo 2 booking requests are currently supported.
+        </p>
+      </div>
+
+      <div>
+        <h3>02. Build your request</h3>
+        <p>
+          Choose a package, date, location and the shots you want.
+        </p>
+      </div>
+
+      <div>
+        <h3>03. Send it to Boris</h3>
+        <p>
+          Copy your request into your existing chat.
+          Wait for confirmation before making plans.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="disclaimer">
+    Filming depends on safe weather, airspace checks,
+    required registrations, suitable insurance and location
+    permissions. No unsafe requests or flying over crowds.
+    Prices, travel costs and footage delivery agreed before
+    confirmation. Sessions include setup and checks—not
+    continuous flight. Original clips supplied without editing.
+  </div>
+
+</main>
+
+<footer>
+  Boris Flight Studio · Independent service, not affiliated with DJI.
+  DJI names and manufacturer imagery belong to their respective owners.
+  No payment is collected on this website.
+</footer>
+
+<!-- UNAVAILABLE DRONE MESSAGE -->
+
+<dialog id="unavailable" aria-labelledby="unavailableTitle">
+
+  <div class="dialog-top">
+    <h2 id="unavailableTitle">No drivers avaliable</h2>
+    <button class="close" data-close aria-label="Close">×</button>
+  </div>
+
+  <div class="unavailable-icon" aria-hidden="true">↗️</div>
+
+  <p id="unavailableModel"></p>
+
+  <p class="dialog-copy">
+    This drone cannot be booked right now.
+    You can create a filming request for the DJI Neo 2 instead.
+  </p>
+
+  <button class="pill" id="switchNeo">
+    Choose DJI Neo 2
+  </button>
+
+</dialog>
+
+<!-- NEO 2 BOOKING REQUEST -->
+
+<dialog id="booking" aria-labelledby="bookingTitle">
+
+  <div class="dialog-top">
+    <h2 id="bookingTitle">Book a flight<br>DJI Neo 2</h2>
+    <button class="close" data-close aria-label="Close">×</button>
+  </div>
+
+  <p class="dialog-copy">
+    Create a request to copy and send to Boris.
+    Nothing is sent or confirmed by this form.
+  </p>
+
+  <form id="bookingForm">
+
+    <label for="package">Your session</label>
+
+    <select id="package">
+      <option value="Quick Clips — £10 — up to 15 minutes">
+        Quick Clips — £10 · up to 15 min
+      </option>
+
+      <option value="Standard Session — £20 — up to 30 minutes">
+        Standard Session — £20 · up to 30 min
+      </option>
+
+      <option value="Creative Session — £30 — up to 45 minutes">
+        Creative Session — £30 · up to 45 min
+      </option>
+    </select>
+
+    <label for="name">First name or nickname</label>
+    <input
+      id="name"
+      maxlength="60"
+      required
+      autocomplete="given-name"
+    >
+
+    <div class="row">
+      <div>
+        <label for="date">Preferred date</label>
+        <input id="date" type="date" required>
+      </div>
+
+      <div>
+        <label for="time">Time (UK local)</label>
+        <input id="time" type="time" required>
+      </div>
+    </div>
+
+    <label for="location">General location</label>
+    <input
+      id="location"
+      maxlength="160"
+      required
+      placeholder="Park or area—not a home address"
+    >
+
+    <label for="idea">Your filming idea</label>
+    <textarea id="idea" maxlength="1200" required></textarea>
+
+    <label class="check">
+      <input type="checkbox" required>
+      <span>
+        I understand this is a request, not a confirmed booking,
+        and filming depends on safe conditions and permissions.
+      </span>
+    </label>
+
+    <button class="pill submit" type="submit">
+      Prepare my request
+    </button>
+
+    <p class="fine">
+      No payment. No details uploaded or stored by this form.
+      Don't enter sensitive information.
+    </p>
+  </form>
+
+  <section class="request" id="result" hidden>
+    <h3>Ready—not sent.</h3>
+
+    <label for="message">
+Copy this into your chat with Boris
+    </label>
+
+    <textarea id="message" rows="11" readonly></textarea>
+
+    <button class="pill submit" id="copy" type="button">
+      Copy request
+    </button>
+
+    <p id="copyStatus" role="status" aria-live="polite"></p>
+  </section>
+
+</dialog>
+
+<script>
+"use strict";
+
+const $ = id => document.getElementById(id);
+
+function today() {
+  const values = {};
+
+  new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/London",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(new Date()).forEach(part => {
+    values[part.type] = part.value;
+  });
+
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+$("date").min = today();
+
+function choose(model) {
+  if (model === "DJI Neo 2") {
+    $("date").min = today();
+    $("booking").showModal();
+  } else {
+    $("unavailableModel").textContent = model;
+    $("unavailable").showModal();
+  }
+}
+
+// Drone navigation, pictures and booking buttons
+document.querySelectorAll("[data-model]").forEach(button => {
+  button.addEventListener("click", () => {
+    choose(button.dataset.model);
+  });
+});
+
+// Clicking a drone's title or background also selects it
+document.querySelectorAll(".drone").forEach(card => {
+  card.addEventListener("click", event => {
+    if (!event.target.closest("button")) {
+      choose(card.querySelector("[data-model]").dataset.model);
+    }
+  });
+});
+
+// Close buttons; Escape also closes native dialogs
+document.querySelectorAll("[data-close]").forEach(button => {
+  button.addEventListener("click", () => {
+    button.closest("dialog").close();
+  });
+});
+
+$("switchNeo").addEventListener("click", () => {
+  $("unavailable").close();
+  choose("DJI Neo 2");
+});
+
+$("date").addEventListener("input", () => {
+  $("date").setCustomValidity("");
+});
+
+// Hide an old request if the form is changed
+$("bookingForm").addEventListener("input", () => {
+  $("result").hidden = true;
+});
+
+$("bookingForm").addEventListener("submit", event => {
+  event.preventDefault();
+
+  $("date").min = today();
+
+  if ($("date").value < today()) {
+    $("date").setCustomValidity("Choose today or a future date.");
+    $("date").reportValidity();
+    return;
+  }
+
+  const name = $("name").value.trim();
+  const location = $("location").value.trim();
+  const idea = $("idea").value.trim();
+
+  if (!name || !location || !idea) {
+    alert("Please enter your name, location and filming idea.");
+    return;
+  }
+
+  const date = $("date").value
+    .split("-")
+    .reverse()
+    .join("/");
+
+  $("message").value = [
+    "DRONE FILMING REQUEST",
+    "Drone: DJI Neo 2",
+    `Name: ${name}`,
+    `Package: ${$("package").value}`,
+    `Preferred date: ${date}`,
+    `Time: ${$("time").value} (UK local)`,
+    `Location: ${location}`,
+    "",
+    "Filming idea:",
+    idea,
+    "",
+    "Please confirm availability, permissions, footage delivery",
+    "and final price. This is a request, not a confirmed booking."
+  ].join("\n");
+
+  $("result").hidden = false;
+
+  $("copyStatus").textContent =
+    "Not sent. Copy and send this to Boris.";
+
+  $("message").focus();
+});
+
+$("copy").addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText($("message").value);
+
+    $("copyStatus").textContent =
+      "Copied. Paste it into your chat with Boris and send it.";
+  } catch {
+    $("message").focus();
+    $("message").select();
+
+    $("copyStatus").textContent =
+      "Select and copy the text above, then send it to Boris.";
+  }
+});
+</script>
+<style>
+body {
+  background: #090a0c;
+  color: #f5f5f7;
+}
+
+header {
+  background: #101114;
+  border-color: #ffffff15;
+}
+
+.brand small {
+  color: #a0a4ac;
+}
+
+.note {
+  background: #16181d;
+  color: #afb4be;
+}
+
+.models {
+  background: #101114;
+  border-color: #ffffff15;
+}
+
+.models button {
+  color: #c6cad1;
+}
+
+.models button:hover {
+  color: white;
+}
+
+.intro {
+  padding: 50px 20px 35px;
+}
+
+.intro p {
+  color: #aeb3be;
+}
+
+.catalogue {
+  gap: 14px;
+  padding: 0 14px;
+}
+
+/* Dark studio stages */
+.drone,
+.drone.featured {
+  position: relative;
+  isolation: isolate;
+  background: #11151b;
+  border: 1px solid #ffffff12;
+  border-radius: 10px;
+  padding: 36px;
+  overflow: hidden;
+}
+
+.drone:nth-child(2) {
+  background: #16171c;
+}
+
+.drone:nth-child(3) {
+  background: #0e181c;
+}
+
+.drone.featured {
+  background: #131a25;
+}
+
+/* Mouse-controlled studio lighting */
+.drone::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+
+  background: radial-gradient(
+    ellipse at var(--light-x, 50%) var(--light-y, 45%),
+    #8baed02e,
+    transparent 65%
+  );
+}
+
+/* Subtle illuminated stage edge */
+.drone::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 110px;
+  height: 1px;
+  pointer-events: none;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #b0c8df66,
+    transparent
+  );
+}
+
+.drone .kicker {
+  color: #a4b2c5;
+}
+
+.drone p {
+  color: #a9b2bf;
+}
+
+/* Larger product photography */
+.product {
+  height: 340px;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+  margin: 10px 0 25px;
+}
+
+.product img {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+  transform: scale(1.8);
+  filter: drop-shadow(0 25px 15px #0009);
+
+  transition:
+    transform .65s cubic-bezier(.2, .7, .2, 1),
+    filter .65s;
+}
+
+/* Deliberate close-up when exploring the product */
+.product:hover img,
+.product:focus-visible img {
+  transform: scale(2.2) translateY(-4px);
+  filter: drop-shadow(0 30px 18px #000b) brightness(1.12);
+}
+
+.availability {
+  color: #aeb7c5;
+}
+
+.featured .availability {
+  color: #a2dfb7;
+}
+
+.drone .pill {
+  background: white;
+  color: #16191e;
+  border-color: white;
+}
+
+.drone .pill:hover {
+  background: #dce6f3;
+}
+
+/* Full-width Neo 2 feature */
+.showcase {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  align-items: center;
+  min-height: 560px;
+  overflow: hidden;
+  margin: 0 14px 14px;
+  padding: 60px 6vw;
+  background: #090d15;
+  border: 1px solid #ffffff16;
+  border-radius: 10px;
+}
+
+.showcase::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+
+  background:
+    radial-gradient(
+      ellipse at 76% 47%,
+      #54759b66,
+      transparent 49%
+    ),
+    linear-gradient(
+      115deg,
+      #07090e,
+      #152436
+    );
+}
+
+.showcase-copy {
+  position: relative;
+  z-index: 2;
+}
+
+.showcase .kicker {
+  color: #9db4d1;
+}
+
+.showcase h2 {
+  font-size: clamp(44px, 6vw, 86px);
+  line-height: 1;
+  letter-spacing: -3px;
+  margin: 20px 0;
+}
+
+.showcase p {
+  color: #b4c1d2;
+  max-width: 360px;
+}
+
+.showcase .pill {
+  background: white;
+  color: #111;
+  border-color: white;
+  margin-top: 10px;
+}
+
+.showcase-photo {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  height: 400px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.showcase-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform: scale(2);
+  filter: drop-shadow(0 40px 25px #000b);
+}
+
+.showcase-footnote {
+  position: absolute;
+  bottom: 20px;
+  left: 6vw;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #9aabc2;
+}
+
+.media {
+border-top: 1px solid #ffffff14;
+  background: #0d1016;
+}
+
+.media .kicker {
+  color: #9caec5;
+}
+
+.how {
+  background: #0d1016;
+}
+
+.steps p,
+.disclaimer {
+  color: #a9b0bc;
+}
+
+footer {
+  border-color: #ffffff20;
+  color: #949eae;
+}
+
+/* Keep booking forms clear and readable */
+dialog {
+  color: #202124;
+  background: white;
+}
+
+@media (max-width: 700px) {
+  .showcase {
+    grid-template-columns: 1fr;
+    padding: 35px 25px 45px;
+    min-height: 0;
+    margin: 0 8px 8px;
+  }
+
+  .showcase h2 {
+    letter-spacing: -2px;
+  }
+
+  .showcase-copy {
+    max-width: 100%;
+  }
+
+  .showcase-photo {
+    height: 260px;
+  }
+
+  .showcase-photo img {
+    transform: scale(1.9);
+  }
+
+  .showcase-footnote {
+    left: 25px;
+    font-size: 9px;
+    letter-spacing: 1px;
+  }
+
+  .catalogue {
+    padding: 0 8px;
+    gap: 8px;
+  }
+
+  .drone {
+    padding: 26px 22px;
+  }
+
+  .product {
+    height: 280px;
+  }
+
+  .product img {
+    transform: scale(1.8);
+  }
+
+  .product:hover img,
+  .product:focus-visible img {
+    transform: scale(1.95);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product img {
+    transition: none;
+  }
+
+  .product:hover img,
+  .product:focus-visible img {
+    transform: scale(1.8);
+  }
+}
+</style>
+
+<script>
+(() => {
+  if (document.getElementById("neo-showcase")) return;
+
+  const catalogue = document.querySelector(".catalogue");
+  if (!catalogue) return;
+
+  const hero = document.createElement("section");
+
+  hero.className = "showcase";
+  hero.id = "neo-showcase";
+
+  hero.innerHTML = `
+    <div class="showcase-copy">
+      <div class="kicker">
+        THE NEO 2 / FILM WITH BORIS
+      </div>
+
+      <h2>Small drone.<br>Big entrance.</h2>
+
+      <p>
+        A closer look at your next perspective.
+        Neo 2 filming requests from £10.
+      </p>
+
+      <button type="button" class="pill">
+        Book a flight ↗️
+      </button>
+    </div>
+
+    <div class="showcase-photo">
+      <img
+        src="https://www-cdn.djiits.com/cms/uploads/c108f7561fdb680e96523c11e959c1cf.png"
+        alt="Close-up of the DJI Neo 2"
+      >
+    </div>
+
+    <div class="showcase-footnote">
+      DJI PRODUCT IMAGE / INDEPENDENT FILMING SERVICE
+    </div>
+  `;
+
+  catalogue.before(hero);
+
+  hero.querySelector("button").addEventListener("click", () => {
+    document.getElementById("booking").showModal();
+  });
+
+  const reduced = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  );
+
+  document.querySelectorAll(".drone").forEach(card => {
+    card.addEventListener("pointermove", event => {
+      if (reduced.matches || event.pointerType === "touch") {
+        return;
+      }
+
+      const bounds = card.getBoundingClientRect();
+
+      const x =
+        (event.clientX - bounds.left) / bounds.width * 100;
+
+      const y =
+        (event.clientY - bounds.top) / bounds.height * 100;
+
+      card.style.setProperty("--light-x", `${x}%`);
+      card.style.setProperty("--light-y", `${y}%`);
+    });
+
+    card.addEventListener("pointerleave", () => {
+      card.style.removeProperty("--light-x");
+      card.style.removeProperty("--light-y");
+    });
+  });
+})();
+</script>
+<style>
+/* Keep the whole drone inside its photo area */
+.product,
+.showcase-photo {
+  display: block;
+  position: relative;
+  height: clamp(240px, 28vw, 420px);
+  min-height: 0;
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.product img,
+.showcase-photo img {
+  position: absolute;
+  inset: 0;
+  display: block;
+
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  max-width: 100%;
+  max-height: 100%;
+
+  object-fit: contain;
+  object-position: center;
+
+  transform: none;
+  filter: drop-shadow(0 18px 18px #0008) brightness(1.12);
+  transition: filter .3s;
+}
+
+/* Light up on hover instead of cropping the drone */
+.product:hover img,
+.product:focus-visible img {
+  transform: none;
+  filter: drop-shadow(0 18px 18px #0008) brightness(1.22);
+}
+
+/* Remove the line crossing the photo area */
+.drone::after {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .product,
+  .showcase-photo {
+    height: 260px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product img,
+  .showcase-photo img {
+    transition: none;
+  }
+}
+</style>
+<script>
+(() => {
+  if (window.neoTabInstalled) return;
+  window.neoTabInstalled = true;
+
+  const neoPage = new URL(window.location.href);
+  neoPage.hash = "neo2";
+
+  // Show the dedicated Neo 2 page in the new tab.
+  if (window.location.hash === "#neo2") {
+    document.title = "DJI Neo 2 | Boris Flight Studio";
+
+    const main = document.querySelector("main");
+    const video = document.querySelector(".media");
+
+    const home = new URL(window.location.href);
+    home.hash = "";
+
+    const back = document.createElement("a");
+    back.href = home.href;
+    back.textContent = "← Back to all drones";
+    back.style.cssText =
+      "display:inline-block;margin:26px 5vw;color:inherit";
+
+    const detail = document.createElement("section");
+    detail.className = "showcase";
+
+    detail.innerHTML = `
+      <div class="showcase-copy">
+        <div class="kicker">
+          BORIS FLIGHT STUDIO / NEO 2
+        </div>
+
+        <h2>DJI Neo 2.</h2>
+
+        <p>
+          Your idea. A fresh perspective.
+          Outdoor filming sessions with Boris.
+        </p>
+
+        <p>
+          Quick Clips £10 · Standard £20 · Creative £30
+        </p>
+
+        <button
+          type="button"
+          class="pill"
+          id="neoBookFlight"
+        >
+          Book a flight ↗️
+        </button>
+
+        <p class="fine">
+          Booking requests only.
+          Safe conditions and confirmation required.
+        </p>
+      </div>
+
+      <div class="showcase-photo">
+        <img
+          src="https://www-cdn.djiits.com/cms/uploads/c108f7561fdb680e96523c11e959c1cf.png"
+          alt="DJI Neo 2"
+        >
+      </div>
+    `;
+
+    main.replaceChildren(back, detail);
+
+    // Keep the trailer on the Neo 2 page.
+    if (video) main.append(video);
+
+    document.querySelector(".models")?.remove();
+
+    document.querySelectorAll(
+      'nav a[href="#drones"]'
+    ).forEach(link => {
+      link.href = home.href;
+    });
+
+    document.querySelector(".brand").href = home.href;
+
+    document.getElementById("neoBookFlight")
+      .addEventListener("click", () => {
+        document.getElementById("booking").showModal();
+      });
+
+    return;
+  }
+
+  // Open Neo 2 in a new tab instead of the old popup.
+  document.addEventListener("click", event => {
+    const target = event.target;
+
+    if (!(target instanceof Element)) return;
+
+    const modelButton = target.closest(
+      '[data-model="DJI Neo 2"]'
+    );
+
+    const card = target.closest(".drone");
+
+    const neoCard = card?.querySelector(
+      '[data-model="DJI Neo 2"]'
+    );
+
+    const heroButton = target.closest(".showcase button");
+    const switchButton = target.closest("#switchNeo");
+
+    if (
+      !modelButton &&
+      !neoCard &&
+      !heroButton &&
+      !switchButton
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    if (switchButton) {
+      document.getElementById("unavailable").close();
+    }
+
+    window.open(
+      neoPage.href,
+      "_blank",
+      "noopener,noreferrer"
+    );
+  }, true);
+})();
+</script>
+<style>
+body.neo-store {
+  background: white;
+  color: #202124;
+}
+
+.neo-store header {
+  background: white;
+  border-color: #ddd;
+}
+
+.neo-store .brand small {
+  color: #777;
+}
+
+.neo-store .note {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.neo-store footer {
+  color: #666;
+  border-color: #ddd;
+  padding-bottom: 120px;
+}
+
+.neo-product {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 5vw;
+  padding: 20px 5vw 65px;
+}
+
+.neo-gallery {
+  min-width: 0;
+  align-self: start;
+  position: sticky;
+  top: 20px;
+}
+
+.neo-photo {
+  width: 100%;
+  height: 440px;
+  object-fit: contain;
+  display: block;
+  background: #f6f6f6;
+  border-radius: 10px;
+}
+
+.neo-thumbs {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.neo-thumbs button {
+  width: 80px;
+  height: 65px;
+  background: #f7f7f7;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 3px;
+}
+
+.neo-thumbs button[aria-pressed="true"] {
+  border: 2px solid #1478c9;
+}
+
+.neo-thumbs img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.neo-info h1 {
+  font-size: 38px;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  margin: 0 0 15px;
+}
+
+.neo-price {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.neo-sub {
+  font-size: 13px;
+  color: #666;
+}
+
+.neo-benefits {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  background: #f7f7f7;
+  padding: 15px;
+  margin: 20px 0;
+  font-size: 12px;
+}
+
+.neo-info h2 {
+  font-size: 21px;
+  margin-top: 30px;
+}
+
+.neo-option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 1px solid #d4d4d4;
+  background: white;
+  color: #222;
+  border-radius: 9px;
+  padding: 18px;
+  margin: 12px 0;
+}
+
+.neo-option[aria-pressed="true"] {
+  border: 2px solid #1679d0;
+  background: #f3f8ff;
+  padding: 17px;
+}
+
+.neo-option strong {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 16px;
+}
+
+.neo-option small {
+  display: block;
+  font-size: 13px;
+  color: #666;
+  margin-top: 7px;
+}
+
+.neo-bookbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+
+  padding: 16px 5vw;
+  background: #fffffff2;
+  border-top: 1px solid #ddd;
+  backdrop-filter: blur(15px);
+  color: #222;
+}
+
+.neo-bookbar strong {
+  font-size: 22px;
+}
+
+.neo-bookbar small {
+  display: block;
+  font-size: 11px;
+  color: #666;
+}
+
+.neo-bookbar button {
+  border: 0;
+  border-radius: 25px;
+  padding: 13px 25px;
+  color: white;
+  background: #0879d9;
+  min-height: 46px;
+}
+
+.neo-store dialog {
+  z-index: 30;
+}
+
+@media (max-width: 700px) {
+  .neo-product {
+    grid-template-columns: 1fr;
+    padding: 15px 22px 45px;
+    gap: 30px;
+  }
+
+  .neo-gallery {
+    position: static;
+  }
+
+  .neo-photo {
+    height: 300px;
+  }
+
+  .neo-info h1 {
+    font-size: 32px;
+  }
+
+  .neo-bookbar {
+    padding: 12px 20px;
+  }
+
+  .neo-bookbar strong {
+    font-size: 18px;
+  }
+
+  .neo-thumbs button {
+    width: 65px;
+  }
+}
+</style>
+
+<script>
+(() => {
+  if (
+    location.hash !== "#neo2" ||
+    document.getElementById("neoProduct")
+  ) {
+    return;
+  }
+
+  document.body.classList.add("neo-store");
+
+  const main = document.querySelector("main");
+  const trailer = main.querySelector(".media");
+
+  const home = new URL(location.href);
+  home.hash = "";
+
+  const back = document.createElement("a");
+  back.href = home.href;
+  back.textContent = "← All drones";
+  back.style.cssText =
+    "display:inline-block;margin:24px 5vw;color:inherit";
+
+  const photos = [
+    "https://se-cdn.djiits.com/tpc/uploads/carousel/image/61dae2255c85099d9fcab59698d6acbf@ultra.webp",
+
+    "https://se-cdn.djiits.com/tpc/uploads/carousel/image/f50c7cbcdc6509c764e8a69583619524@ultra.webp",
+
+"https://se-cdn.djiits.com/tpc/uploads/carousel/image/1d7297059739b589f8be9e0d38e0341a@ultra.webp"
+  ];
+
+  const product = document.createElement("section");
+
+  product.className = "neo-product";
+  product.id = "neoProduct";
+
+  product.innerHTML = `
+    <div class="neo-gallery">
+
+      <img
+        class="neo-photo"
+        id="neoMainPhoto"
+        src="${photos[0]}"
+        alt="DJI Neo 2 manufacturer product photo 1"
+      >
+
+      <div class="neo-thumbs">
+        ${photos.map((src, index) => `
+          <button
+            type="button"
+            data-photo="${index}"
+            aria-label="View product photo ${index + 1}"
+            aria-pressed="${index === 0}"
+          >
+            <img src="${src}" alt="">
+          </button>
+        `).join("")}
+      </div>
+
+      <p class="neo-sub">
+        Official DJI product images.
+        Equipment pictured is not a promise of accessories
+        included in your filming session.
+      </p>
+
+    </div>
+
+    <div class="neo-info">
+
+      <p class="neo-sub">
+        BORIS FLIGHT STUDIO / FILMING SESSION
+      </p>
+
+      <h1>DJI Neo 2</h1>
+
+      <div class="neo-price" id="neoDisplayPrice">£10</div>
+
+      <p class="neo-sub">
+        Session price—not the drone purchase price.
+      </p>
+
+      <div class="neo-benefits">
+        <span>Original video clips</span>
+        <span>Outdoor filming</span>
+        <span>No payment online</span>
+      </div>
+
+      <h2>Select your flight package</h2>
+
+      <button
+        type="button"
+        class="neo-option"
+        data-package="0"
+        aria-pressed="true"
+      >
+        <strong>
+          <span>Quick Clips</span>
+          <span>£10</span>
+        </strong>
+        <small>
+          Up to 15 minutes on location.
+          A few agreed shots.
+        </small>
+      </button>
+
+      <button
+        type="button"
+        class="neo-option"
+        data-package="1"
+        aria-pressed="false"
+      >
+        <strong>
+          <span>Standard Session</span>
+          <span>£20</span>
+        </strong>
+        <small>
+          Up to 30 minutes on location.
+          A selection of angles.
+        </small>
+      </button>
+
+      <button
+        type="button"
+        class="neo-option"
+        data-package="2"
+        aria-pressed="false"
+      >
+        <strong>
+          <span>Creative Session</span>
+          <span>£30</span>
+        </strong>
+        <small>
+          Up to 45 minutes on location.
+          More time to explore ideas.
+        </small>
+      </button>
+
+      <p class="neo-sub">
+        Session time includes setup, safety checks and battery
+        changes—not continuous flight. Original clips supplied
+        without editing. Travel and delivery arrangements agreed
+        in advance.
+      </p>
+
+      <h2>Before you book</h2>
+
+      <p class="neo-sub">
+        Requests depend on safe weather, airspace checks,
+        required registrations, suitable insurance and location
+        permissions. No unsafe requests or flying over crowds.
+        Your request must be confirmed directly by Boris.
+      </p>
+
+    </div>
+  `;
+
+  main.replaceChildren(back, product);
+
+  if (trailer) {
+    main.append(trailer);
+  }
+
+  let selected = 0;
+  const prices = [10, 20, 30];
+
+  const bar = document.createElement("div");
+  bar.className = "neo-bookbar";
+
+  bar.innerHTML = `
+    <div>
+      <strong id="neoBarPrice">£10</strong>
+      <small>DJI Neo 2 · Booking request only</small>
+    </div>
+
+    <button type="button">Book a flight</button>
+  `;
+
+  document.body.append(bar);
+
+  // Switch gallery photos.
+  product.querySelectorAll("[data-photo]").forEach(button => {
+    button.addEventListener("click", () => {
+      const index = Number(button.dataset.photo);
+      const image = document.getElementById("neoMainPhoto");
+
+      image.src = photos[index];
+
+      image.alt =
+        "DJI Neo 2 manufacturer product photo " + (index + 1);
+
+      product.querySelectorAll("[data-photo]").forEach(item => {
+        item.setAttribute(
+          "aria-pressed",
+          String(item === button)
+        );
+});
+    });
+  });
+
+  // Update selected package and both displayed prices.
+  product.querySelectorAll("[data-package]").forEach(button => {
+    button.addEventListener("click", () => {
+      selected = Number(button.dataset.package);
+
+      product.querySelectorAll("[data-package]").forEach(item => {
+        item.setAttribute(
+          "aria-pressed",
+          String(item === button)
+        );
+      });
+
+      document.getElementById("neoDisplayPrice").textContent =
+        "£" + prices[selected];
+
+      document.getElementById("neoBarPrice").textContent =
+        "£" + prices[selected];
+    });
+  });
+
+  // Carry the selected package into the existing request form.
+  bar.querySelector("button").addEventListener("click", () => {
+    const select = document.getElementById("package");
+
+    select.selectedIndex = selected;
+
+    select.dispatchEvent(
+      new Event("input", { bubbles: true })
+    );
+
+    document.getElementById("booking").showModal();
+  });
+})();
+</script>
+<style>
+/* General polish */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 24px;
+}
+
+body {
+  font-family:
+    -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: #a8cefa;
+  color: #101820;
+}
+
+button,
+.pill,
+.models button,
+.neo-thumbs button,
+.neo-option {
+  transition:
+    background-color .18s,
+    border-color .18s,
+    box-shadow .18s;
+}
+
+.pill:active,
+.neo-bookbar button:active {
+  filter: brightness(.9);
+}
+
+.neo-thumbs button:hover,
+.neo-option:hover {
+  border-color: #1478c9;
+}
+
+/* Photo transitions without changing image sizing */
+.neo-photo {
+  transition: opacity .18s;
+}
+
+.neo-photo.photo-loading {
+  opacity: .25;
+}
+
+.product img,
+.showcase-photo img,
+.neo-photo {
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Footer */
+#studioFooter {
+  padding: 40px 5vw 28px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 30px;
+}
+
+.footer-name {
+  font-size: 17px;
+  font-weight: 750;
+  letter-spacing: -.4px;
+  color: inherit;
+}
+
+.footer-description {
+  max-width: 340px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.footer-heading {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: inherit;
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.footer-links a {
+  font-size: 13px;
+  text-decoration: none;
+  text-underline-offset: 4px;
+  padding: 3px 0;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+}
+
+.footer-bottom {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #80808040;
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+.footer-bottom p {
+  margin: 8px 0;
+}
+
+/* Keep footer clear of the fixed booking bar */
+.neo-store #studioFooter {
+  padding-bottom: calc(
+    120px + env(safe-area-inset-bottom)
+  );
+}
+
+.neo-bookbar {
+  padding-bottom: calc(
+    16px + env(safe-area-inset-bottom)
+  );
+}
+
+.neo-product,
+.neo-info,
+.neo-gallery {
+  min-width: 0;
+}
+
+/* Phone improvements */
+@media (max-width: 700px) {
+  header {
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .models button {
+    min-height: 44px;
+  }
+
+  .neo-thumbs {
+    flex-wrap: wrap;
+  }
+
+  .neo-option {
+    min-height: 80px;
+  }
+
+  .neo-bookbar {
+    padding-bottom: calc(
+      12px + env(safe-area-inset-bottom)
+    );
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .footer-intro {
+    grid-column: 1 / -1;
+  }
+
+  .footer-links a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  dialog {
+    max-height: 85dvh;
+  }
+}
+
+/* Respect reduced-motion settings */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  button,
+  .pill,
+  .models button,
+  .neo-thumbs button,
+  .neo-option,
+  .neo-photo {
+    transition: none;
+  }
+}
+</style>
+
+<script>
+(() => {
+  if (document.getElementById("studioFooter")) return;
+
+  // Custom drone browser-tab icon.
+  const icon = document.createElement("link");
+
+  icon.rel = "icon";
+  icon.type = "image/svg+xml";
+
+  const svg = `
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 64 64"
+    >
+      <rect
+        width="64"
+        height="64"
+        rx="15"
+        fill="#101820"
+      />
+
+      <g fill="none" stroke="#fff" stroke-width="3">
+        <circle cx="17" cy="17" r="9"/>
+        <circle cx="47" cy="17" r="9"/>
+        <circle cx="17" cy="47" r="9"/>
+        <circle cx="47" cy="47" r="9"/>
+<path d="M21 21L43 43M43 21L21 43"/>
+      </g>
+
+      <rect
+        x="24"
+        y="24"
+        width="16"
+        height="16"
+        rx="5"
+        fill="#7ebaff"
+      />
+    </svg>
+  `;
+
+  icon.href =
+    "data:image/svg+xml," + encodeURIComponent(svg);
+
+  document.querySelectorAll('link[rel="icon"]')
+    .forEach(item => item.remove());
+
+  document.head.append(icon);
+
+  // Search-engine page description.
+  let description = document.querySelector(
+    'meta[name="description"]'
+  );
+
+  if (!description) {
+    description = document.createElement("meta");
+    description.name = "description";
+    document.head.append(description);
+  }
+
+  description.content =
+    "Explore DJI drones and request an outdoor DJI Neo 2 " +
+    "filming session with Boris Flight Studio. " +
+    "Independent service; bookings require confirmation.";
+
+  // Fade while a selected gallery photo loads.
+  const photo = document.getElementById("neoMainPhoto");
+
+  if (photo) {
+    const settle = () => {
+      photo.classList.remove("photo-loading");
+    };
+
+    const observer = new MutationObserver(() => {
+      if (photo.complete) {
+        settle();
+        return;
+      }
+
+      photo.classList.add("photo-loading");
+    });
+
+    observer.observe(photo, {
+      attributes: true,
+      attributeFilter: ["src"]
+    });
+
+    photo.addEventListener("load", settle);
+    photo.addEventListener("error", settle);
+  }
+
+  // Footer links.
+  const home = new URL(location.href);
+  home.hash = "";
+
+  const film = new URL(location.href);
+  film.hash = "film";
+
+  const footer =
+    document.querySelector("footer") ||
+    document.createElement("footer");
+
+  footer.id = "studioFooter";
+
+  footer.innerHTML = `
+    <div class="footer-grid">
+
+      <div class="footer-intro">
+        <div class="footer-name">
+          BORIS FLIGHT STUDIO
+        </div>
+
+        <p class="footer-description">
+          A fresh perspective on your next idea.
+          Independent outdoor drone filming with the DJI Neo 2.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="footer-heading">Explore</h2>
+
+        <div class="footer-links">
+          <a id="footerDrones">All drones ↗️</a>
+          <a id="footerFilm">Watch the Neo 2 trailer ↗️</a>
+          <a href="#" id="footerTop">Back to top ↑</a>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="footer-heading">Before you book</h2>
+
+        <p class="footer-description">
+          Requests need direct confirmation.
+          Weather, airspace and location permissions must
+          be suitable. No payment is taken here.
+        </p>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <p>
+        Boris Flight Studio · Independent service.
+        Not affiliated with DJI.
+        Product imagery and the official trailer are supplied
+        by DJI, not filmed by Boris.
+      </p>
+
+      <p>
+        The request form does not upload or save your details.
+        Send the prepared message yourself in your existing
+        chat with Boris. Manufacturer images and videos load
+        from external websites.
+      </p>
+    </div>
+  `;
+
+  footer.querySelector("#footerDrones").href = home.href;
+
+  const filmLink = footer.querySelector("#footerFilm");
+  filmLink.href = film.href;
+
+  function scrollBehaviour() {
+    return matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches ? "auto" : "smooth";
+  }
+
+  filmLink.addEventListener("click", event => {
+    const section = document.getElementById("film");
+    if (!section) return;
+
+    event.preventDefault();
+
+    section.scrollIntoView({
+      behavior: scrollBehaviour()
+    });
+  });
+
+  footer.querySelector("#footerTop")
+    .addEventListener("click", event => {
+      event.preventDefault();
+
+      window.scrollTo({
+        top: 0,
+        behavior: scrollBehaviour()
+      });
+    });
+
+  if (!footer.isConnected) {
+    document.body.append(footer);
+  }
+})();
+</script>
+<style>
+#filmCinema {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  overflow: hidden;
+  background: transparent;
+  box-shadow: none;
+  color: white;
+}
+
+#filmCinema::backdrop {
+  background: #030508f2;
+  backdrop-filter: blur(12px);
+}
+
+#filmCinema .cinema-stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+
+  width: min(
+    92vw,
+    calc((100dvh - 130px) * 16 / 9)
+  );
+
+  aspect-ratio: 16 / 9;
+  transform: translate(-50%, -50%);
+  background: black;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 25px 100px #000b;
+}
+
+#filmCinema video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: black;
+}
+
+#filmCinema .cinema-close {
+  position: absolute;
+  right: 4vw;
+  top: max(16px, env(safe-area-inset-top));
+  border: 1px solid #ffffff55;
+  background: #171b24;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 24px;
+  min-height: 44px;
+  z-index: 2;
+}
+
+#filmCinema .cinema-caption {
+  position: absolute;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  width: 100%;
+  padding: 0 20px;
+  text-align: center;
+  font-size: 12px;
+  color: #c2cad5;
+}
+
+#filmCinema .cinema-caption a {
+  color: white;
+}
+</style>
+
+<script>
+(() => {
+  if (document.getElementById("filmCinema")) return;
+
+  // Update the thumbnail's description.
+  document.querySelectorAll("a.trailer").forEach(link => {
+    link.setAttribute(
+      "aria-label",
+      "Play the official DJI Neo 2 trailer"
+    );
+  });
+
+  document.querySelectorAll(".media .fine").forEach(note => {
+    note.textContent =
+      "Manufacturer footage by DJI—not filmed by Boris. " +
+      "Demonstrated shots are not guaranteed for your session. " +
+      "Click Play to open the cinema player.";
+  });
+
+  const cinema = document.createElement("dialog");
+  cinema.id = "filmCinema";
+
+  cinema.setAttribute(
+    "aria-label",
+    "Official DJI Neo 2 trailer"
+  );
+
+  cinema.innerHTML = `
+    <button
+      type="button"
+      class="cinema-close"
+      aria-label="Close video"
+    >
+      Close ×
+    </button>
+
+    <div class="cinema-stage">
+      <video
+        controls
+        playsinline
+        preload="none"
+        aria-label="DJI Neo 2 official trailer"
+        poster="https://videocaption.djicdn.com/poster/20251030/e240381995ef5343a0617f0abe3459f3.jpg"
+      ></video>
+    </div>
+
+    <div class="cinema-caption" role="status">
+      Official DJI film · Not filmed by Boris · Esc to close
+    </div>
+  `;
+
+  document.body.append(cinema);
+
+  const stage = cinema.querySelector(".cinema-stage");
+  const video = cinema.querySelector("video");
+  const caption = cinema.querySelector(".cinema-caption");
+
+  let animation;
+  let savedOverflow = "";
+
+  function stop() {
+    animation?.cancel();
+
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
+
+    document.documentElement.style.overflow =
+      savedOverflow;
+  }
+
+  cinema.addEventListener("close", stop);
+
+  cinema.querySelector(".cinema-close")
+    .addEventListener("click", () => {
+      cinema.close();
+    });
+
+  // Clicking the dark area also closes the player.
+  cinema.addEventListener("click", event => {
+    if (event.target === cinema) {
+      cinema.close();
+    }
+  });
+
+  // Useful fallback if the external video cannot load.
+  video.addEventListener("error", () => {
+    if (!cinema.open) return;
+
+    caption.innerHTML = `
+      Video could not load.
+      <a
+        href="https://cdn.djivideos.com/watch/b9f766e5-1d6e-425f-bfdc-3b0c2bd2ab40?autoplay=false"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Watch on DJI ↗️
+      </a>
+    `;
+  });
+
+document.addEventListener("click", event => {
+    if (!(event.target instanceof Element)) return;
+
+    const trailer = event.target.closest("a.trailer");
+    if (!trailer) return;
+
+    // Stop the old link from opening another tab.
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    if (cinema.open) return;
+
+    const start = trailer.getBoundingClientRect();
+
+    savedOverflow =
+      document.documentElement.style.overflow;
+
+    document.documentElement.style.overflow = "hidden";
+
+    caption.textContent =
+      "Official DJI film · Not filmed by Boris · Esc to close";
+
+    cinema.showModal();
+
+    video.src =
+      "https://us-cms-videos.dji.net/video_trans/" +
+      "f7105b87528340c8a8a442fd143355a6/720.mp4";
+
+    const end = stage.getBoundingClientRect();
+
+    const dx =
+      start.left + start.width / 2 -
+      (end.left + end.width / 2);
+
+    const dy =
+      start.top + start.height / 2 -
+      (end.top + end.height / 2);
+
+    const reduced = matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    // Expand from the thumbnail into the cinema position.
+    animation = stage.animate(
+      [
+        {
+          transform:
+            `translate(` +
+            `calc(-50% + ${dx}px), ` +
+            `calc(-50% + ${dy}px)) ` +
+            `scale(` +
+            `${start.width / end.width}, ` +
+            `${start.height / end.height})`
+        },
+        {
+          transform:
+            "translate(-50%, -50%) scale(1)"
+        }
+      ],
+      {
+        duration: reduced ? 0 : 650,
+        easing: "cubic-bezier(.22,1,.36,1)"
+      }
+    );
+
+    // Start playing when the zoom finishes.
+    animation.finished.then(async () => {
+      if (!cinema.open) return;
+
+      try {
+        await video.play();
+      } catch {
+        if (cinema.open) {
+          caption.textContent =
+            "Press Play in the video controls to start · Esc to close";
+        }
+      }
+    }).catch(() => {});
+  }, true);
+})();
+</script>
+<script>
+(() => {
+  const cinema = document.getElementById("filmCinema");
+
+  if (!cinema || cinema.dataset.slowZoom) return;
+
+  cinema.dataset.slowZoom = "true";
+
+  const stage = cinema.querySelector(".cinema-stage");
+  const originalAnimate = stage.animate.bind(stage);
+
+  const reduced = () => matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+
+  // Slow, cinematic zoom instead of the quick expansion.
+  stage.animate = function(frames, options) {
+    const video = cinema.querySelector("video");
+
+    stage.style.background =
+      `black url("${video.poster}") center / contain no-repeat`;
+
+    // Prepare playback silently behind the poster.
+    video.style.opacity = "0";
+    video.muted = true;
+    video.play().catch(() => {});
+
+    const zoom = originalAnimate(frames, {
+      ...options,
+      duration: reduced() ? 0 : 2600,
+      easing: "cubic-bezier(.45,0,.2,1)"
+    });
+
+    zoom.finished.then(() => {
+      if (!cinema.open) return;
+
+      // Reveal the trailer from its beginning.
+      try {
+        video.currentTime = 0;
+      } catch {}
+
+      video.style.opacity = "1";
+      video.muted = false;
+    }).catch(() => {});
+
+    return zoom;
+  };
+
+  let context;
+  let stopSound = () => {};
+
+  function whoosh() {
+    stopSound();
+
+    const Audio =
+      window.AudioContext || window.webkitAudioContext;
+
+    if (!Audio) return;
+
+    try {
+      context ||= new Audio();
+      context.resume().catch(() => {});
+
+      const now = context.currentTime;
+      const duration = 2.6;
+
+      // Generate a soft rush of air.
+      const buffer = context.createBuffer(
+        1,
+        Math.ceil(context.sampleRate * duration),
+        context.sampleRate
+      );
+
+      const samples = buffer.getChannelData(0);
+
+      for (let i = 0; i < samples.length; i++) {
+        samples[i] = Math.random() * 2 - 1;
+      }
+
+      const noise = context.createBufferSource();
+      noise.buffer = buffer;
+
+      // Sweep upward as the camera moves towards the video.
+      const filter = context.createBiquadFilter();
+      filter.type = "bandpass";
+      filter.Q.value = .65;
+
+      filter.frequency.setValueAtTime(160, now);
+
+      filter.frequency.exponentialRampToValueAtTime(
+        2300,
+        now + 2
+      );
+
+      filter.frequency.exponentialRampToValueAtTime(
+        420,
+        now + duration
+      );
+
+      // Gentle rise, then fade before the trailer audio.
+      const gain = context.createGain();
+
+      gain.gain.setValueAtTime(.0001, now);
+
+      gain.gain.exponentialRampToValueAtTime(
+        .11,
+        now + 1.8
+      );
+
+      gain.gain.exponentialRampToValueAtTime(
+        .0001,
+        now + duration
+      );
+
+      noise.connect(filter);
+      filter.connect(gain);
+      gain.connect(context.destination);
+
+      noise.start(now);
+      noise.stop(now + duration);
+
+      stopSound = () => {
+        try {
+          noise.stop();
+        } catch {}
+
+        gain.disconnect();
+      };
+
+      noise.onended = () => {
+        noise.disconnect();
+        filter.disconnect();
+        gain.disconnect();
+      };
+    } catch {
+      // Video still works if sound effects are unavailable.
+    }
+  }
+
+  // Run before the existing trailer click handler.
+  window.addEventListener("click", event => {
+    if (!(event.target instanceof Element)) return;
+
+    if (
+      !event.target.closest("a.trailer") ||
+      cinema.open
+    ) {
+      return;
+    }
+
+    if (!reduced()) {
+      whoosh();
+    }
+  }, true);
+
+  // Never leave the sound running after closing.
+  cinema.addEventListener("close", () => {
+    stopSound();
+  });
+})();
+</script>
+<style>
+/* Smooth zoom for drone photos */
+.product img,
+.showcase-photo img,
+.neo-photo {
+  transform: scale(1);
+  transform-origin: center;
+
+  transition:
+    transform .55s cubic-bezier(.2, .7, .2, 1),
+    filter .3s,
+    opacity .18s;
+}
+
+/* Make the drone bigger on hover */
+.product:hover img,
+.product:focus-visible img,
+.showcase-photo:hover img,
+.neo-photo:hover {
+  transform: scale(1.12);
+}
+
+/* Allow hovering over the main showcase image */
+.showcase-photo {
+  pointer-events: auto;
+}
+
+/* Keep the product-page zoom inside its gallery */
+.neo-gallery {
+  overflow: hidden;
+}
+
+/* Avoid sticky hover effects on touchscreens */
+@media (hover: none) {
+  .product:hover img,
+  .showcase-photo:hover img,
+  .neo-photo:hover {
+    transform: none;
+  }
+}
+
+/* Respect reduced-motion settings */
+@media (prefers-reduced-motion: reduce) {
+  .product img,
+  .showcase-photo img,
+  .neo-photo {
+    transition: none;
+  }
+
+  .product:hover img,
+  .product:focus-visible img,
+  .showcase-photo:hover img,
+  .neo-photo:hover {
+    transform: none;
+  }
+}
+</style>
+<style>
+/* Turn off the old spinning effects */
+.product img,
+.showcase-photo img,
+.neo-photo {
+  animation: none !important;
+}
+
+.product:hover img,
+.product:focus-visible img,
+.showcase-photo:hover img,
+.neo-photo:hover {
+  transform: scale(1.08) !important;
+}
+
+.product {
+  position: relative;
+  isolation: isolate;
+}
+
+/* Glass quick-look panel */
+.drone-quicklook {
+  position: absolute;
+  z-index: 3;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+
+  display: block;
+  padding: 16px 18px;
+
+  border: 1px solid #ffffff30;
+  border-radius: 10px;
+  background: #101822ee;
+  color: white;
+  text-align: left;
+  box-shadow: 0 12px 35px #0005;
+
+  pointer-events: none;
+
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+
+  transition:
+    opacity .2s,
+    transform .2s,
+    visibility .2s;
+}
+
+.drone-quicklook small,
+.drone-quicklook strong,
+.drone-quicklook span {
+  display: block;
+}
+
+.drone-quicklook small {
+  color: #a8c4e4;
+  font-size: 10px;
+  letter-spacing: 1.6px;
+}
+
+.drone-quicklook strong {
+  font-size: 19px;
+  margin: 5px 0;
+}
+
+.drone-quicklook span {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #d0d8e3;
+}
+
+/* Wait 1.5 seconds before showing the preview */
+@media (hover: hover) and (pointer: fine) {
+  .product:hover .drone-quicklook {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition-delay: 1.5s;
+  }
+}
+
+/* Also works when selecting with the keyboard */
+.product:focus-visible .drone-quicklook {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition-delay: 1.5s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drone-quicklook {
+    transition: none;
+    transform: none;
+  }
+
+  .product:hover img,
+  .product:focus-visible img,
+  .showcase-photo:hover img,
+  .neo-photo:hover {
+    transform: none !important;
+  }
+}
+</style>
+<style>
+/* Remove the old preview panel and spinning */
+.drone-quicklook {
+  display: none !important;
+}
+
+.product img,
+.showcase-photo img,
+.neo-photo {
+  animation: none !important;
+}
+
+.product:hover img,
+.product:focus-visible img {
+  transform: scale(1.06) !important;
+}
+
+.drone .product {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Silent preview sits over the original photo */
+.product .drone-hover-video {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: black;
+
+  opacity: 0;
+  z-index: 4;
+  pointer-events: none;
+  transition: opacity .35s;
+}
+
+.product.preview-playing .drone-hover-video {
+  opacity: 1;
+}
+
+/* Clearly identify the footage as DJI's */
+.product .hover-video-credit {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  padding: 5px 9px;
+  border-radius: 5px;
+  background: #000b;
+  color: white;
+  font: 10px/1.4 Arial, sans-serif;
+  letter-spacing: 1px;
+
+  opacity: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.product.preview-playing .hover-video-credit {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product .drone-hover-video {
+    transition: none;
+  }
+
+  .product:hover img,
+  .product:focus-visible img {
+    transform: none !important;
+  }
+}
+</style>
+
+<script>
+(() => {
+  if (window.droneVideoPreviews) return;
+  window.droneVideoPreviews = true;
+
+  const clips = {
+    "DJI Mavic 4 Pro":
+      "https://us-cms-videos.dji.net/video_trans/17589c82e41640b4a6c3822cc1e24f0b/720.mp4",
+
+    "DJI Mini 5 Pro":
+      "https://us-cms-videos.dji.net/video_trans/22e90b89596b423190c9105f573ef04c/720.mp4",
+
+    "DJI Avata 360":
+      "https://us-cms-videos.dji.net/video_trans/68e5b42b453b4ebd88fe6ca271190757/720.mp4",
+
+    "DJI Neo 2":
+      "https://us-cms-videos.dji.net/video_trans/f7105b87528340c8a8a442fd143355a6/720.mp4"
+  };
+
+  const stops = [];
+
+  document.querySelectorAll(".drone .product")
+    .forEach(button => {
+      const source = clips[button.dataset.model];
+      if (!source) return;
+
+      const video = document.createElement("video");
+
+      video.className = "drone-hover-video";
+      video.muted = true;
+      video.defaultMuted = true;
+      video.playsInline = true;
+      video.preload = "none";
+      video.tabIndex = -1;
+
+      video.setAttribute("muted", "");
+      video.setAttribute("playsinline", "");
+      video.setAttribute("aria-hidden", "true");
+
+      const credit = document.createElement("span");
+
+      credit.className = "hover-video-credit";
+      credit.textContent = "DJI FILM / SILENT PREVIEW";
+      credit.setAttribute("aria-hidden", "true");
+
+      button.append(video, credit);
+
+      let timer;
+      let active = false;
+
+      function stop() {
+        active = false;
+        clearTimeout(timer);
+
+        button.classList.remove("preview-playing");
+        video.pause();
+
+        // Cancel loading instead of downloading in the background.
+        if (video.hasAttribute("src")) {
+          video.removeAttribute("src");
+          video.load();
+        }
+      }
+
+      stops.push(stop);
+
+      function start() {
+        if (active) return;
+
+        if (matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches) {
+          return;
+        }
+
+        if (navigator.connection?.saveData) return;
+
+        active = true;
+
+        // Only load after the mouse stays for 1.5 seconds.
+        timer = setTimeout(() => {
+          if (!active) return;
+
+          video.src = source;
+          video.load();
+        }, 1500);
+      }
+
+      video.addEventListener("loadedmetadata", () => {
+        if (!active) return;
+
+        video.currentTime = 2;
+video.play().catch(stop);
+      });
+
+      // Reveal only once the video is actually playing.
+      video.addEventListener("playing", () => {
+        if (active) {
+          button.classList.add("preview-playing");
+        } else {
+          video.pause();
+        }
+      });
+
+      // Loop a short excerpt rather than the whole trailer.
+      video.addEventListener("timeupdate", () => {
+        if (active && video.currentTime >= 10) {
+          video.currentTime = 2;
+        }
+      });
+
+      // If loading fails, leave the original photo visible.
+      video.addEventListener("error", stop);
+
+      button.addEventListener("pointerenter", event => {
+        if (event.pointerType !== "touch") {
+          start();
+        }
+      });
+
+      button.addEventListener("pointerleave", stop);
+
+      // Keyboard support.
+      button.addEventListener("focus", start);
+      button.addEventListener("blur", stop);
+    });
+
+  const stopAll = () => {
+    stops.forEach(stop => stop());
+  };
+
+  window.addEventListener("blur", stopAll);
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) stopAll();
+  });
+
+  // Stop the preview before opening a drone or booking message.
+  window.addEventListener("click", event => {
+    if (
+      event.target instanceof Element &&
+      event.target.closest("[data-model]")
+    ) {
+      stopAll();
+    }
+  }, true);
+})();
+</script>
+<script>
+(() => {
+  const cinema = document.getElementById("filmCinema");
+
+  if (!cinema || cinema.dataset.slowZoom) return;
+
+  cinema.dataset.slowZoom = "true";
+
+  const stage = cinema.querySelector(".cinema-stage");
+  const originalAnimate = stage.animate.bind(stage);
+
+  const reduced = () => matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+
+  // Slow, cinematic zoom instead of the quick expansion.
+  stage.animate = function(frames, options) {
+    const video = cinema.querySelector("video");
+
+    stage.style.background =
+      `black url("${video.poster}") center / contain no-repeat`;
+
+    // Prepare playback silently behind the poster.
+    video.style.opacity = "0";
+    video.muted = true;
+    video.play().catch(() => {});
+
+    const zoom = originalAnimate(frames, {
+      ...options,
+      duration: reduced() ? 0 : 2600,
+      easing: "cubic-bezier(.45,0,.2,1)"
+    });
+
+    zoom.finished.then(() => {
+      if (!cinema.open) return;
+
+      // Reveal the trailer from its beginning.
+      try {
+        video.currentTime = 0;
+      } catch {}
+
+      video.style.opacity = "1";
+      video.muted = false;
+    }).catch(() => {});
+
+    return zoom;
+  };
+
+  let context;
+  let stopSound = () => {};
+
+  function whoosh() {
+    stopSound();
+
+    const Audio =
+      window.AudioContext || window.webkitAudioContext;
+
+    if (!Audio) return;
+
+    try {
+      context ||= new Audio();
+      context.resume().catch(() => {});
+
+      const now = context.currentTime;
+      const duration = 2.6;
+
+      // Generate a soft rush of air.
+      const buffer = context.createBuffer(
+        1,
+        Math.ceil(context.sampleRate * duration),
+        context.sampleRate
+      );
+
+      const samples = buffer.getChannelData(0);
+
+      for (let i = 0; i < samples.length; i++) {
+        samples[i] = Math.random() * 2 - 1;
+      }
+
+      const noise = context.createBufferSource();
+      noise.buffer = buffer;
+
+      // Sweep upward as the camera moves towards the video.
+      const filter = context.createBiquadFilter();
+      filter.type = "bandpass";
+      filter.Q.value = .65;
+
+      filter.frequency.setValueAtTime(160, now);
+
+      filter.frequency.exponentialRampToValueAtTime(
+        2300,
+        now + 2
+      );
+
+      filter.frequency.exponentialRampToValueAtTime(
+        420,
+        now + duration
+      );
+
+      // Gentle rise, then fade before the trailer audio.
+      const gain = context.createGain();
+
+      gain.gain.setValueAtTime(.0001, now);
+
+      gain.gain.exponentialRampToValueAtTime(
+        .11,
+        now + 1.8
+      );
+
+      gain.gain.exponentialRampToValueAtTime(
+        .0001,
+        now + duration
+      );
+
+      noise.connect(filter);
+      filter.connect(gain);
+      gain.connect(context.destination);
+
+      noise.start(now);
+      noise.stop(now + duration);
+
+      stopSound = () => {
+        try {
+          noise.stop();
+        } catch {}
+
+        gain.disconnect();
+      };
+
+      noise.onended = () => {
+        noise.disconnect();
+        filter.disconnect();
+        gain.disconnect();
+      };
+    } catch {
+      // Video still works if sound effects are unavailable.
+    }
+  }
+
+  // Run before the existing trailer click handler.
+  window.addEventListener("click", event => {
+    if (!(event.target instanceof Element)) return;
+
+    if (
+      !event.target.closest("a.trailer") ||
+      cinema.open
+    ) {
+      return;
+    }
+
+    if (!reduced()) {
+      whoosh();
+    }
+  }, true);
+
+  // Never leave the sound running after closing.
+  cinema.addEventListener("close", () => {
+    stopSound();
+  });
+})();
+</script>
+<style>
+/* Countdown over the small preview */
+.product .trailer-countdown {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 12px;
+  z-index: 6;
+
+  padding: 8px 11px;
+  background: #000b;
+  border-radius: 6px;
+  color: white;
+  font: 11px/1.5 Arial, sans-serif;
+
+  pointer-events: none;
+  display: none;
+}
+
+.product.trailer-counting .trailer-countdown {
+  display: block;
+}
+
+.trailer-countdown i {
+  display: block;
+  height: 2px;
+  background: #ffffff33;
+  margin-top: 6px;
+  overflow: hidden;
+}
+
+.trailer-countdown i::after {
+  content: "";
+  display: block;
+  height: 100%;
+  background: white;
+  transform-origin: left;
+  animation: trailerWait 7s linear forwards;
+}
+
+@keyframes trailerWait {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* Full trailer overlay */
+#autoDroneTrailer {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: white;
+  overflow: hidden;
+  box-shadow: none;
+}
+
+#autoDroneTrailer::backdrop {
+  background: #030508f2;
+  backdrop-filter: blur(12px);
+}
+
+#autoDroneTrailer .full-stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  width: min(
+    94vw,
+    calc((100dvh - 140px) * 16 / 9)
+  );
+
+  aspect-ratio: 16 / 9;
+  background: black;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+#autoDroneTrailer video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+#autoDroneTrailer .full-close {
+  position: absolute;
+  right: 3vw;
+  top: 18px;
+  z-index: 2;
+  padding: 10px 18px;
+  min-height: 44px;
+  border: 1px solid #ffffff66;
+  background: #161b24;
+  color: white;
+  border-radius: 24px;
+}
+
+#autoDroneTrailer .full-sound {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  padding: 12px 22px;
+  background: white;
+  color: #111;
+  border: 0;
+  border-radius: 24px;
+  min-height: 44px;
+}
+
+#autoDroneTrailer .full-title {
+  position: absolute;
+  top: 22px;
+  left: 3vw;
+  max-width: 65%;
+  font: 12px Arial, sans-serif;
+  color: #cbd4e2;
+}
+</style>
+
+<script>
+(() => {
+  if (document.getElementById("autoDroneTrailer")) return;
+
+  const modal = document.createElement("dialog");
+  modal.id = "autoDroneTrailer";
+  modal.setAttribute("aria-label", "Full DJI trailer");
+
+  modal.innerHTML = `
+    <span class="full-title"></span>
+
+    <button type="button" class="full-close">
+      Close ×
+    </button>
+
+    <div class="full-stage">
+      <video
+        controls
+        playsinline
+        preload="none"
+        aria-label="Full manufacturer trailer"
+      ></video>
+    </div>
+
+    <button type="button" class="full-sound" hidden>
+      Enable sound
+    </button>
+  `;
+
+  document.body.append(modal);
+
+  const full = modal.querySelector("video");
+  const stage = modal.querySelector(".full-stage");
+  const sound = modal.querySelector(".full-sound");
+  const title = modal.querySelector(".full-title");
+
+  let zoom;
+  let oldOverflow = "";
+  let run = 0;
+
+  const cancels = [];
+
+  function cancelAll() {
+    cancels.forEach(cancel => cancel());
+  }
+
+  modal.querySelector(".full-close")
+    .addEventListener("click", () => modal.close());
+
+  modal.addEventListener("click", event => {
+    if (event.target === modal) modal.close();
+  });
+
+  // Escape also closes this native dialog.
+  modal.addEventListener("close", () => {
+    run++;
+    zoom?.cancel();
+
+    full.pause();
+    full.removeAttribute("src");
+    full.load();
+
+    document.documentElement.style.overflow =
+oldOverflow;
+
+    cancelAll();
+  });
+
+  sound.addEventListener("click", async () => {
+    full.muted = false;
+
+    try {
+      await full.play();
+      sound.hidden = true;
+    } catch {
+      sound.textContent =
+        "Press Play in the video controls";
+    }
+  });
+
+  async function expand(button, preview) {
+    if (
+      modal.open ||
+      document.querySelector("dialog[open]")
+    ) {
+      return;
+    }
+
+    // Use this drone's actual preview source.
+    const source = preview.currentSrc || preview.src;
+    if (!source) return;
+
+    const rect = button.getBoundingClientRect();
+    const poster = button.querySelector("img")?.src || "";
+
+    cancelAll();
+
+    document.querySelectorAll(".drone-hover-video")
+      .forEach(video => video.pause());
+
+    oldOverflow =
+      document.documentElement.style.overflow;
+
+    document.documentElement.style.overflow = "hidden";
+
+    const token = ++run;
+
+    title.textContent =
+      `${button.dataset.model} · Official DJI trailer, ` +
+      "not filmed by Boris";
+
+    modal.setAttribute(
+      "aria-label",
+      `${button.dataset.model} full trailer`
+    );
+
+    sound.hidden = true;
+    full.poster = poster;
+    full.src = source;
+    full.muted = true;
+    full.style.opacity = "0";
+
+    stage.style.background =
+      `black url("${poster}") center / contain no-repeat`;
+
+    modal.showModal();
+
+    // Prepare silently during the expansion.
+    full.play().catch(() => {});
+
+    const end = stage.getBoundingClientRect();
+
+    const dx =
+      rect.left + rect.width / 2 -
+      (end.left + end.width / 2);
+
+    const dy =
+      rect.top + rect.height / 2 -
+      (end.top + end.height / 2);
+
+    zoom = stage.animate(
+      [
+        {
+          transform:
+            `translate(` +
+            `calc(-50% + ${dx}px),` +
+            `calc(-50% + ${dy}px)) ` +
+            `scale(` +
+            `${rect.width / end.width},` +
+            `${rect.height / end.height})`
+        },
+        {
+          transform: "translate(-50%,-50%) scale(1)"
+        }
+      ],
+      {
+        duration: 2400,
+        easing: "cubic-bezier(.45,0,.2,1)"
+      }
+    );
+
+    try {
+      await zoom.finished;
+    } catch {
+      return;
+    }
+
+    if (!modal.open || token !== run) return;
+
+    // Restart the complete trailer.
+    try {
+      full.currentTime = 0;
+    } catch {}
+
+    full.style.opacity = "1";
+    full.muted = false;
+
+    try {
+      await full.play();
+    } catch {
+      if (!modal.open || token !== run) return;
+
+      // Hover-triggered audio may be blocked.
+      full.muted = true;
+      sound.hidden = false;
+
+      try {
+        await full.play();
+      } catch {
+        sound.textContent = "Play trailer with sound";
+      }
+    }
+
+    if (modal.open && full.paused) {
+      sound.hidden = false;
+    }
+  }
+
+  document.querySelectorAll(".drone .product")
+    .forEach(button => {
+      const preview = button.querySelector(
+        ".drone-hover-video"
+      );
+
+      if (!preview) return;
+
+      let timer = null;
+      let inside = false;
+
+      const badge = document.createElement("span");
+
+      badge.className = "trailer-countdown";
+      badge.setAttribute("aria-hidden", "true");
+
+      badge.innerHTML =
+        "Full trailer opens after 7 seconds · " +
+        "Move away to cancel<i></i>";
+
+      button.append(badge);
+
+      function cancel() {
+        clearTimeout(timer);
+        timer = null;
+        button.classList.remove("trailer-counting");
+      }
+
+      cancels.push(cancel);
+
+      function schedule() {
+        if (
+          !inside ||
+          timer !== null ||
+          modal.open ||
+          document.hidden ||
+          matchMedia(
+            "(prefers-reduced-motion: reduce)"
+          ).matches
+        ) {
+          return;
+        }
+
+        button.classList.add("trailer-counting");
+
+        timer = setTimeout(() => {
+          if (
+            inside &&
+            !preview.paused &&
+            !document.hidden
+          ) {
+            expand(button, preview);
+          } else {
+            cancel();
+          }
+}, 7000);
+      }
+
+      button.addEventListener("pointerenter", event => {
+        if (event.pointerType === "touch") return;
+
+        inside = true;
+
+        if (!preview.paused) schedule();
+      });
+
+      button.addEventListener("pointerleave", () => {
+        inside = false;
+        cancel();
+      });
+
+      preview.addEventListener("playing", schedule);
+      preview.addEventListener("pause", cancel);
+      preview.addEventListener("error", cancel);
+    });
+
+  window.addEventListener("blur", cancelAll);
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) cancelAll();
+  });
+
+  window.addEventListener("click", event => {
+    if (
+      event.target instanceof Element &&
+      event.target.closest("[data-model]")
+    ) {
+      cancelAll();
+    }
+  }, true);
+})();
+</script>
+<style>
+/* Neo 2 page only */
+.neo-store {
+  background: #f7f8fa !important;
+}
+
+.neo-store header {
+  padding: 20px 4vw;
+}
+
+.neo-store .neo-product {
+  grid-template-columns: 1.12fr 1fr;
+  gap: 4vw;
+  padding: 12px 4vw 70px;
+  align-items: start;
+}
+
+/* Dark studio gallery */
+.neo-store .neo-gallery {
+  background: #101923;
+  border: 1px solid #253444;
+  border-radius: 18px;
+  padding: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px #14253a12;
+}
+
+.neo-store .neo-photo {
+  height: clamp(300px, 34vw, 510px);
+
+  background: radial-gradient(
+    ellipse at 50% 45%,
+    #344c65,
+    #101923 70%
+  );
+
+  border-radius: 12px;
+  object-fit: contain;
+  padding: 16px;
+
+  animation: none !important;
+  transform: none !important;
+}
+
+.neo-store .neo-photo:hover {
+  transform: none !important;
+}
+
+.neo-store .neo-gallery > .neo-sub {
+  color: #aebdcd;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.neo-store .neo-thumbs {
+  margin: 18px 0;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.neo-store .neo-thumbs button {
+  width: 76px;
+  height: 66px;
+  border-radius: 9px;
+}
+
+.neo-store .neo-thumbs button[aria-pressed="true"] {
+  border: 3px solid #61b4ff;
+}
+
+/* Stronger product information */
+.neo-store .neo-info {
+  padding: 12px 0;
+}
+
+.neo-store .neo-info > .neo-sub:first-child {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #62758c;
+}
+
+.neo-store .neo-info h1 {
+  font-size: clamp(40px, 4.5vw, 64px);
+  margin: 12px 0;
+  letter-spacing: -2px;
+}
+
+.neo-store .neo-tagline {
+  font-size: 20px;
+  color: #667487;
+  margin: 0 0 22px;
+}
+
+.neo-store .neo-price {
+  font-size: 40px;
+  letter-spacing: -1px;
+}
+
+.neo-store .neo-sub {
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.neo-store .neo-benefits {
+  background: white;
+  border: 1px solid #e4e8ee;
+  border-radius: 10px;
+  gap: 16px;
+  font-size: 13px;
+  padding: 16px;
+}
+
+.neo-store .neo-info h2 {
+  font-size: 24px;
+  letter-spacing: -.5px;
+  margin: 30px 0 16px;
+}
+
+/* Clearer package cards */
+.neo-store .neo-option {
+  min-height: 94px;
+  padding: 21px;
+  border-radius: 12px;
+  margin: 12px 0;
+  border-color: #d8dfe7;
+}
+
+.neo-store .neo-option[aria-pressed="true"] {
+  padding: 20px;
+  background: #edf5ff;
+  border-color: #117bdb;
+  box-shadow: 0 5px 18px #117bdb0b;
+}
+
+.neo-store .neo-option strong {
+  font-size: 18px;
+}
+
+.neo-store .neo-option small {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Expandable booking information */
+.neo-store .neo-terms {
+  border-top: 1px solid #dce2ea;
+  margin-top: 24px;
+  padding: 18px 0;
+}
+
+.neo-store .neo-terms summary {
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+/* Booking bar */
+.neo-store .neo-bookbar {
+  box-shadow: 0 -8px 30px #17263b08;
+}
+
+.neo-store .neo-bookbar button {
+  padding: 15px 30px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.neo-store .neo-bookbar strong {
+  font-size: 28px;
+}
+
+.neo-store .neo-bookbar small {
+  font-size: 12px;
+}
+
+/* Compact film button below the gallery */
+.neo-store a.neo-watch {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  aspect-ratio: auto;
+  position: relative;
+  min-height: 48px;
+  padding: 12px 18px;
+  border: 1px solid #5d738b;
+  border-radius: 9px;
+  color: white;
+  background: #ffffff08;
+  font-size: 14px;
+  text-decoration: none;
+  margin-top: 18px;
+}
+
+.neo-store a.neo-watch::before {
+  display: none;
+}
+
+.neo-store a.neo-watch:hover {
+  background: #ffffff18;
+}
+
+@media (max-width: 700px) {
+  .neo-store .neo-product {
+    grid-template-columns: 1fr;
+padding: 8px 18px 45px;
+    gap: 24px;
+  }
+
+  .neo-store .neo-gallery {
+    padding: 16px;
+  }
+
+  .neo-store .neo-photo {
+    height: 300px;
+  }
+
+  .neo-store .neo-info h1 {
+    font-size: 44px;
+  }
+
+  .neo-store .neo-tagline {
+    font-size: 18px;
+  }
+
+  .neo-store .neo-bookbar strong {
+    font-size: 23px;
+  }
+
+  .neo-store .neo-bookbar button {
+    padding: 12px 20px;
+  }
+}
+</style>
+
+<script>
+(() => {
+  if (
+    !document.body.classList.contains("neo-store") ||
+    document.getElementById("neoStudioView")
+  ) {
+    return;
+  }
+
+  const gallery = document.querySelector(".neo-gallery");
+  const photo = document.getElementById("neoMainPhoto");
+  const info = document.querySelector(".neo-info");
+
+  if (!gallery || !photo || !info) return;
+
+  const studio =
+    "https://www-cdn.djiits.com/cms/uploads/" +
+    "c108f7561fdb680e96523c11e959c1cf.png";
+
+  const thumbs = gallery.querySelector(".neo-thumbs");
+
+  // Add a dedicated studio-product thumbnail.
+  const button = document.createElement("button");
+
+  button.type = "button";
+  button.id = "neoStudioView";
+
+  button.setAttribute(
+    "aria-label",
+    "View Neo 2 studio image"
+  );
+
+  button.setAttribute("aria-pressed", "true");
+
+  const thumb = document.createElement("img");
+  thumb.src = studio;
+  thumb.alt = "";
+
+  button.append(thumb);
+  thumbs.prepend(button);
+
+  function studioView() {
+    photo.src = studio;
+    photo.alt = "DJI Neo 2 — manufacturer studio image";
+
+    thumbs.querySelectorAll("button").forEach(item => {
+      item.setAttribute(
+        "aria-pressed",
+        String(item === button)
+      );
+    });
+  }
+
+  button.addEventListener("click", studioView);
+
+  // Keep the existing gallery photos working.
+  thumbs.addEventListener("click", event => {
+    if (
+      event.target instanceof Element &&
+      event.target.closest("[data-photo]")
+    ) {
+      button.setAttribute("aria-pressed", "false");
+    }
+  });
+
+  // Show the actual drone first.
+  studioView();
+
+  const tagline = document.createElement("p");
+  tagline.className = "neo-tagline";
+  tagline.textContent = "Your idea. A fresh perspective.";
+
+  info.querySelector("h1").after(tagline);
+
+  // Uses the existing cinema-player click handler.
+  const watch = document.createElement("a");
+
+  watch.className = "trailer neo-watch";
+
+  watch.href =
+    "https://cdn.djivideos.com/watch/" +
+    "b9f766e5-1d6e-425f-bfdc-3b0c2bd2ab40?autoplay=false";
+
+  watch.textContent = "▶️ Watch the official Neo 2 film";
+
+  watch.setAttribute(
+    "aria-label",
+    "Watch the official DJI Neo 2 trailer"
+  );
+
+  gallery.append(watch);
+
+  // Keep safety details available without dominating the page.
+  const termsHeading = Array.from(
+    info.querySelectorAll("h2")
+  ).find(heading =>
+    heading.textContent.trim() === "Before you book"
+  );
+
+  if (termsHeading) {
+    const text = termsHeading.nextElementSibling;
+
+    const terms = document.createElement("details");
+    terms.className = "neo-terms";
+
+    const summary = document.createElement("summary");
+
+    summary.textContent =
+      "Before you book — safety & confirmation";
+
+    terms.append(summary);
+    termsHeading.replaceWith(terms);
+
+    if (text) terms.append(text);
+  }
+})();
+</script>
+<style>
+.neo-store .driver-status {
+  font-size: 22px;
+  font-weight: 700;
+  color: #8a521a;
+  margin: 18px 0;
+}
+
+.neo-store .driver-disabled,
+.neo-store .neo-bookbar .driver-disabled {
+  background: #e4e7eb;
+  color: #737b85;
+  border: 1px solid #d7dce3;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.neo-store .driver-page-copy {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #627084;
+}
+
+.neo-store .driver-page-button {
+  width: 100%;
+  border-radius: 28px;
+  padding: 15px 24px;
+  margin-top: 20px;
+}
+
+.neo-store .driver-film {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  background: black;
+  border-radius: 10px;
+}
+
+.neo-store .neo-bookbar .driver-bar-status {
+  font-size: 18px;
+}
+
+@media (max-width: 700px) {
+  .neo-store .neo-bookbar .driver-bar-status {
+    font-size: 14px;
+  }
+
+  .neo-store .neo-bookbar .driver-disabled {
+    padding: 12px;
+    font-size: 12px;
+  }
+}
+</style>
+
+<script>
+(() => {
+  if (window.allDronePagesInstalled) return;
+  window.allDronePagesInstalled = true;
+
+  const root =
+    "https://us-cms-videos.dji.net/video_trans/";
+
+  const models = {
+    "DJI Mavic 4 Pro": {
+      route: "drone-mavic-4-pro",
+      type: "Triple-lens camera drone",
+
+      image:
+        "https://www-cdn.djiits.com/cms/uploads/" +
+        "979ab68fd602bd3440fc4fb12f3ea38e.png",
+
+      video:
+        root +
+        "17589c82e41640b4a6c3822cc1e24f0b/720.mp4"
+    },
+
+    "DJI Mini 5 Pro": {
+      route: "drone-mini-5-pro",
+      type: "Compact camera drone",
+
+      image:
+        "https://www-cdn.djiits.com/cms/uploads/" +
+        "3462d29fa23cf5d29fce9171fb2b6b9d.png",
+
+      video:
+        root +
+        "22e90b89596b423190c9105f573ef04c/720.mp4"
+    },
+
+    "DJI Avata 360": {
+      route: "drone-avata-360",
+      type: "Immersive camera drone",
+
+      image:
+        "https://www-cdn.djiits.com/cms/uploads/" +
+        "19c15ba39f4574808ca6b0380b7d44dc.png",
+
+      video:
+        root +
+        "68e5b42b453b4ebd88fe6ca271190757/720.mp4"
+    }
+  };
+
+  // Remove the old unavailable popup.
+  document.getElementById("unavailable")?.remove();
+
+  // Open unavailable drones in their own tabs.
+  // Neo 2 keeps its existing behaviour.
+  window.addEventListener("click", event => {
+    if (!(event.target instanceof Element)) return;
+
+    const direct = event.target.closest("[data-model]");
+    const card = event.target.closest(".drone");
+
+    const name =
+      direct?.dataset.model ||
+      card?.querySelector("[data-model]")?.dataset.model;
+
+    const model = models[name];
+    if (!model) return;
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    const url = new URL(location.href);
+    url.hash = model.route;
+
+    window.open(
+      url.href,
+      "_blank",
+      "noopener,noreferrer"
+    );
+  }, true);
+
+  // Only build a page if this tab belongs to one
+  // of the unavailable drones.
+  const entry = Object.entries(models).find(
+    ([, model]) => location.hash === "#" + model.route
+  );
+
+  if (!entry) return;
+
+  const [name, model] = entry;
+
+  document.title = name + " | Boris Flight Studio";
+  document.body.classList.add("neo-store");
+
+  const home = new URL(location.href);
+  home.hash = "";
+
+  const neo = new URL(home.href);
+  neo.hash = "neo2";
+
+  document.querySelector(".models")?.remove();
+
+  document.querySelector(".brand").href = home.href;
+
+  document.querySelectorAll(
+    'nav a[href="#drones"]'
+  ).forEach(link => {
+    link.href = home.href;
+  });
+
+  const main = document.querySelector("main");
+
+  main.innerHTML = `
+    <a
+      class="all-drone-back"
+      style="
+display:inline-block;
+        margin:24px 4vw;
+        color:inherit;
+      "
+    >
+      ← All drones
+    </a>
+
+    <section class="neo-product">
+
+      <div class="neo-gallery">
+        <img
+          class="neo-photo"
+          src="${model.image}"
+          alt="${name} — DJI manufacturer image"
+        >
+
+        <p class="neo-sub">
+          Official DJI product image,
+          not photographed by Boris.
+        </p>
+      </div>
+
+      <div class="neo-info">
+        <p class="neo-sub">
+          BORIS FLIGHT STUDIO / DRONE COLLECTION
+        </p>
+
+        <h1>${name}</h1>
+
+        <p class="neo-tagline">${model.type}</p>
+
+        <div class="driver-status">
+          Driver not avaliable
+        </div>
+
+        <div class="neo-benefits">
+          <span>Explore the drone</span>
+          <span>Watch the official film</span>
+        </div>
+
+        <h2>Not currently bookable</h2>
+
+        <p class="driver-page-copy">
+          There is currently no driver available for this
+          drone. You can explore the product and watch
+          its official trailer, but flight requests
+          are not available.
+        </p>
+
+        <button
+          type="button"
+          class="driver-disabled driver-page-button"
+          disabled
+        >
+          Driver not avaliable
+        </button>
+
+        <p class="neo-sub">
+          Looking to request a filming session?
+          The DJI Neo 2 is currently the only drone
+          accepting booking requests.
+        </p>
+
+        <a class="neo-alternative pill">
+          Explore DJI Neo 2 ↗️
+        </a>
+      </div>
+
+    </section>
+
+    <section class="media" id="film">
+      <video
+        class="driver-film"
+        controls
+        playsinline
+        preload="none"
+        poster="${model.image}"
+        src="${model.video}"
+        aria-label="${name} official trailer"
+      ></video>
+
+      <div>
+        <div class="kicker">OFFICIAL DJI FILM</div>
+
+        <h2>Meet the ${name.replace("DJI ", "")}.</h2>
+
+        <p>
+          Explore this drone in DJI’s official trailer.
+        </p>
+
+        <p class="fine">
+          Manufacturer footage by DJI—not filmed by Boris.
+          No filming service is currently available
+          for this model.
+        </p>
+      </div>
+    </section>
+  `;
+
+  main.querySelector(".all-drone-back").href =
+    home.href;
+
+  const alternative = main.querySelector(
+    ".neo-alternative"
+  );
+
+  alternative.href = neo.href;
+  alternative.target = "_blank";
+  alternative.rel = "noopener noreferrer";
+
+  // Replace any booking bar with an unavailable status.
+  document.querySelectorAll(".neo-bookbar")
+    .forEach(bar => bar.remove());
+
+  const bar = document.createElement("div");
+  bar.className = "neo-bookbar";
+
+  bar.innerHTML = `
+    <div>
+      <strong class="driver-bar-status">${name}</strong>
+      <small>No flight requests available</small>
+    </div>
+
+    <button
+      type="button"
+      class="driver-disabled"
+      disabled
+    >
+      Driver not avaliable
+    </button>
+  `;
+
+  document.body.append(bar);
+
+  // Scroll to the film without losing the page route.
+  document.querySelectorAll(
+    'nav a[href="#film"]'
+  ).forEach(link => {
+    link.addEventListener("click", event => {
+      event.preventDefault();
+
+      document.getElementById("film").scrollIntoView({
+        behavior: matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches ? "auto" : "smooth"
+      });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
