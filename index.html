@@ -4765,6 +4765,26 @@ document.querySelectorAll(".drone .product")
     });
 })();
 </script>
+<style>
+@media (hover: none) and (pointer: coarse) {
+  .drone .product,
+  .drone .product img,
+  .showcase-photo,
+  .showcase-photo img,
+  .neo-photo,
+  .neo-photo img {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .drone .product img,
+  .showcase-photo img,
+  .neo-photo img {
+    pointer-events: none;
+  }
+}
+</style>
 
 </body>
 </html>
