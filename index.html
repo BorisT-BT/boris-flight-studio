@@ -4514,6 +4514,182 @@ display:inline-block;
   });
 })();
 </script>
+<style>
+.official-video-slot {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+.official-video-slot iframe {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  border-radius: 10px;
+  background: black;
+}
+
+.official-video-slot figcaption {
+  margin-top: 10px;
+  font: 12px/1.6 Arial, sans-serif;
+  color: #b5c1d0;
+}
+
+.official-video-slot figcaption a {
+  color: inherit;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 700px) {
+  .media {
+    grid-template-columns: 1fr;
+    min-width: 0;
+  }
+
+  .neo-product {
+    min-width: 0;
+  }
+
+  .neo-bookbar {
+    flex-wrap: wrap;
+  }
+}
+</style>
+
+<script>
+(() => {
+  if (window.officialDJIPlayersInstalled) return;
+  window.officialDJIPlayersInstalled = true;
+
+  const neo =
+    "https://cdn.djivideos.com/watch/" +
+    "b9f766e5-1d6e-425f-bfdc-3b0c2bd2ab40?autoplay=false";
+
+  const players = {
+    "17589c82e41640b4a6c3822cc1e24f0b":
+      "https://cdn.djivideos.com/watch/" +
+      "81f76a57-a96b-4125-8603-56b54a5e53c6?autoplay=false",
+
+    "22e90b89596b423190c9105f573ef04c":
+      "https://cdn.djivideos.com/watch/" +
+      "a86df9e2-bfb7-4115-8f61-39e210cbd376?autoplay=false",
+
+    "68e5b42b453b4ebd88fe6ca271190757":
+      "https://cdn.djivideos.com/watch/" +
+      "b3a0e87d-2780-4d76-b437-4f1ad25361b5?autoplay=false",
+
+    "f7105b87528340c8a8a442fd143355a6": neo
+  };
+
+  function player(url, title) {
+    const figure = document.createElement("figure");
+    figure.className = "official-video-slot";
+
+    const frame = document.createElement("iframe");
+    frame.src = url;
+    frame.title = title;
+    frame.allow = "autoplay; fullscreen; picture-in-picture";
+    frame.allowFullscreen = true;
+    frame.loading = "lazy";
+
+    const caption = document.createElement("figcaption");
+
+    caption.append(
+      "Official DJI film · Tap Play to start. "
+    );
+
+    const fallback = document.createElement("a");
+    fallback.href = url;
+    fallback.target = "_blank";
+    fallback.rel = "noopener noreferrer";
+    fallback.textContent = "Open on DJI ↗️";
+
+    caption.append(fallback);
+    figure.append(frame, caption);
+
+    return figure;
+  }
+
+  // Replace the old trailer thumbnails with official players.
+  document.querySelectorAll("a.trailer").forEach(link => {
+    // Keep the compact gallery button as a direct DJI link.
+    if (link.classList.contains("neo-watch")) {
+      link.classList.remove("trailer");
+      link.href = neo;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent =
+        "▶️ Watch the official film on DJI ↗️";
+      return;
+    }
+
+    link.replaceWith(
+      player(neo, "DJI Neo 2 official trailer")
+    );
+  });
+
+  // Fix the other drones' product-page trailers too.
+  document.querySelectorAll("video.driver-film")
+    .forEach(video => {
+      const source = video.currentSrc || video.src;
+
+      const entry = Object.entries(players).find(
+        ([id]) => source.includes(id)
+      );
+
+      if (!entry) return;
+
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
+
+      video.replaceWith(
+        player(
+          entry[1],
+          video.getAttribute("aria-label") ||
+          "Official DJI trailer"
+        )
+      );
+    });
+
+  // Remove the blocked hover videos and their timers.
+  // Existing page-opening handlers use the data-model
+  // attributes, which are preserved.
+document.querySelectorAll(".drone .product")
+    .forEach(button => {
+      button.querySelectorAll("video").forEach(video => {
+        video.pause();
+        video.removeAttribute("src");
+        video.load();
+      });
+
+      const clean = button.cloneNode(true);
+
+      clean.classList.remove(
+        "preview-playing",
+        "trailer-counting"
+      );
+
+      clean.querySelectorAll(
+        ".drone-hover-video," +
+        ".hover-video-credit," +
+        ".trailer-countdown," +
+        ".drone-quicklook"
+      ).forEach(item => item.remove());
+
+      button.replaceWith(clean);
+    });
+
+  document.querySelectorAll(".media .fine")
+    .forEach(note => {
+      note.textContent =
+        "Manufacturer footage by DJI—not filmed by Boris. " +
+        "Use the player’s Play and fullscreen controls. " +
+        "Demonstrated shots are not guaranteed for a filming session.";
+    });
+})();
+</script>
 
 </body>
 </html>
