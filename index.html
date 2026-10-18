@@ -4690,6 +4690,81 @@ document.querySelectorAll(".drone .product")
     });
 })();
 </script>
+<script>
+(() => {
+  const trailers = {
+    "b9f766e5-1d6e-425f-bfdc-3b0c2bd2ab40":
+      "1mXwci-_uWc",
+
+    "81f76a57-a96b-4125-8603-56b54a5e53c6":
+      "BNEmDcQr6hk",
+
+    "a86df9e2-bfb7-4115-8f61-39e210cbd376":
+      "jRzpagPx6uY",
+
+    "b3a0e87d-2780-4d76-b437-4f1ad25361b5":
+      "LFZmfqA48ec"
+  };
+
+  document.querySelectorAll(
+    ".official-video-slot iframe"
+  ).forEach(frame => {
+    const match = Object.entries(trailers).find(
+      ([id]) => frame.src.includes(id)
+    );
+
+    if (!match) return;
+
+    const video = match[1];
+
+    frame.referrerPolicy =
+      "strict-origin-when-cross-origin";
+
+    frame.allow =
+      "autoplay; encrypted-media; fullscreen; picture-in-picture";
+
+    frame.allowFullscreen = true;
+
+    frame.src =
+      `https://www.youtube.com/embed/${video}` +
+      "?playsinline=1&rel=0";
+
+    const caption = frame.closest("figure")
+      ?.querySelector("figcaption");
+
+    if (caption) {
+      caption.replaceChildren(
+        document.createTextNode(
+          "Official DJI trailer · Tap Play. "
+        )
+      );
+
+      const link = document.createElement("a");
+
+      link.href =
+        `https://www.youtube.com/watch?v=${video}`;
+
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = "Open on YouTube ↗️";
+
+      caption.append(link);
+    }
+  });
+
+  document.querySelectorAll("a.neo-watch")
+    .forEach(link => {
+      link.href =
+        "https://www.youtube.com/watch?v=1mXwci-_uWc";
+
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+
+      link.textContent =
+        "▶️ Watch the official trailer on YouTube ↗️";
+    });
+})();
+</script>
 
 </body>
 </html>
