@@ -5203,6 +5203,344 @@ const label = document.createElement("span");
   }, true);
 })();
 </script>
+<script>
+(() => {
+const URL = 'https://vjvadgaymhcfdzfoqlec.supabase.co';
+
+  const KEY='YOUR_L..._KEY';
+
+  if (
+    window.bfsOwnerBridge ||
+    URL.includes('YOUR_PROJECT') ||
+    KEY.includes('YOUR_')
+  ) return;
+
+  window.bfsOwnerBridge = true;
+
+  const slugs = ['quick','standard','creative'];
+  const names = [
+    'Quick Clips',
+    'Standard Session',
+    'Creative Session'
+  ];
+  const minutes = [15,30,45];
+
+  const money = n => new Intl.NumberFormat(
+    'en-GB',
+    {style:'currency', currency:'GBP'}
+  ).format(n / 100);
+
+  let prices = null;
+  let last = '';
+  let consent = false;
+  let pageRecorded = false;
+
+  try {
+    consent =
+      localStorage.getItem('bfsStatsConsent') === 'yes';
+} catch (e) {}
+
+  const route = location.hash;
+
+  const page = route === '#neo2'
+    ? 'neo2'
+    : route.startsWith('#drone-')
+      ? route.slice(7)
+      : 'catalogue';
+
+  function record(kind) {
+    if (!consent) return;
+
+    fetch(URL + '/rest/v1/studio_events', {
+      method:'POST',
+      headers:{
+        apikey:***
+        Authorization:'Bearer ' + KEY,
+        'Content-Type':'application/json',
+        Prefer:'return=minimal'
+      },
+      body:JSON.stringify({kind,page})
+    }).then(r => {
+      if (!r.ok) {
+        console.warn(
+          'Activity recording failed:',
+          r.status
+        );
+      }
+    }).catch(() => {});
+  }
+
+  function pageView() {
+    if (consent && !pageRecorded) {
+      pageRecorded = true;
+      record('page_view');
+    }
+  }
+
+  const privacy = document.createElement('aside');
+  privacy.id = 'bfsStatsChoice';
+
+  privacy.style.cssText = `
+    position:fixed;
+    bottom:100px;
+    right:16px;
+    z-index:35;
+    max-width:340px;
+    padding:18px;
+    border:1px solid #556;
+    background:#10151f;
+    color:white;
+    border-radius:12px;
+    font:14px/1.5 system-ui;
+  `;
+
+  privacy.innerHTML = `
+    <p>
+      Allow anonymous activity statistics?
+      We record page views and request-form actions,
+      not your name or message.
+      Our hosting providers still process connection data.
+      Optional.
+    </p>
+    <button type="button" data-choice="yes">
+      Allow
+    </button>
+    <button type="button" data-choice="no">
+      No thanks
+    </button>
+  `;
+
+  let choice = null;
+
+  try {
+    choice = localStorage.getItem('bfsStatsConsent');
+  } catch (e) {}
+
+  privacy.hidden = choice !== null;
+  document.body.append(privacy);
+
+  privacy.querySelectorAll('button').forEach(button => {
+    button.onclick = () => {
+      consent = button.dataset.choice === 'yes';
+
+      try {
+        localStorage.setItem(
+          'bfsStatsConsent',
+          consent ? 'yes' : 'no'
+        );
+      } catch (e) {}
+
+      privacy.hidden = true;
+      pageView();
+    };
+  });
+
+  const settings = document.createElement('button');
+  settings.type = 'button';
+  settings.textContent = 'Visitor statistics preferences';
+  settings.style.cssText =
+    'margin:12px;padding:10px;cursor:pointer';
+
+  settings.onclick = () => privacy.hidden = false;
+
+  (document.querySelector('footer') || document.body)
+    .append(settings);
+
+  pageView();
+
+  const booking = document.getElementById('booking');
+
+  if (booking) {
+    let open = booking.open;
+
+    new MutationObserver(() => {
+      if (booking.open && !open) {
+        record('booking_open');
+      }
+      open = booking.open;
+    }).observe(booking, {
+      attributes:true,
+      attributeFilter:['open']
+    });
+  }
+
+  const form = document.getElementById('bookingForm');
+
+  form?.addEventListener('submit', () => {
+    queueMicrotask(() => {
+      if (
+        document.getElementById('result')?.hidden === false
+      ) {
+        record('request_prepared');
+      }
+    });
+  });
+
+  const status = document.createElement('p');
+  status.setAttribute('role','status');
+  status.textContent = 'Checking current session prices…';
+
+  status.style.cssText = `
+    padding:12px 5vw;
+    color:#ccd2df;
+    background:#141923;
+    margin:0;
+    font:13px system-ui;
+  `;
+
+  (document.querySelector('main') || document.body)
+    .prepend(status);
+
+  function lock(value) {
+    document.querySelectorAll(
+      '.neo-bookbar button,' +
+      '#bookingForm button[type="submit"]'
+    ).forEach(b => b.disabled = value);
+  }
+
+  function paint() {
+    const selected = Number(
+      document.querySelector(
+        '.neo-option[aria-pressed="true"]'
+      )?.dataset.package || 0
+    );
+
+    const label = i => prices
+      ? money(prices[slugs[i]])
+      : 'Price unavailable';
+
+    document.querySelectorAll('.neo-option')
+      .forEach(button => {
+        const i = Number(button.dataset.package);
+        const span = button.querySelector(
+          'strong span:last-child'
+        );
+
+        if (span) span.textContent = label(i);
+      });
+
+['neoDisplayPrice','neoBarPrice'].forEach(id => {
+      const element = document.getElementById(id);
+
+      if (element) {
+        element.textContent = label(selected);
+      }
+    });
+
+    const select = document.getElementById('package');
+
+    if (select) {
+      Array.from(select.options).forEach((option,i) => {
+        option.textContent =
+          names[i] + ' — ' + label(i) +
+          ' · up to ' + minutes[i] + ' min';
+
+        option.value =
+          names[i] + ' — ' + label(i) +
+          ' — up to ' + minutes[i] + ' minutes';
+      });
+    }
+
+    document.querySelectorAll('.drone .availability')
+      .forEach(element => {
+        if (element.textContent.includes(
+          'Booking requests open'
+        )) {
+          element.textContent =
+            'Booking requests open · ' +
+            (prices
+              ? 'from ' + label(0)
+              : 'price unavailable');
+        }
+      });
+
+    document.querySelectorAll('.showcase p')
+      .forEach(element => {
+        if (element.textContent.includes(
+          'filming requests'
+        )) {
+          element.textContent =
+            'A closer look at your next perspective. ' +
+            'Neo 2 filming requests ' +
+            (prices
+              ? 'from ' + label(0) + '.'
+              : '— prices temporarily unavailable.');
+        }
+      });
+  }
+
+  async function sync() {
+    try {
+      const r = await fetch(
+        URL + '/rest/v1/studio_prices?select=slug,pence',
+        {
+          cache:'no-store',
+          headers:{
+            apikey:***
+            Authorization:'Bearer ' + KEY
+          }
+        }
+      );
+
+      if (!r.ok) throw Error('Price service unavailable');
+
+      const data = await r.json();
+
+      const next = Object.fromEntries(
+        data.map(p => [p.slug,p.pence])
+      );
+
+      if (slugs.some(s =>
+        !Number.isInteger(next[s]) ||
+        next[s] < 100 ||
+        next[s] > 100000
+      )) {
+        throw Error('Incomplete prices');
+      }
+
+      const signature = JSON.stringify(
+        slugs.map(s => next[s])
+      );
+
+      if (signature !== last) {
+        const result = document.getElementById('result');
+        if (result) result.hidden = true;
+        last = signature;
+      }
+
+      prices = next;
+      paint();
+      lock(false);
+      status.hidden = true;
+    } catch (e) {
+      prices = null;
+      paint();
+      lock(true);
+
+      status.hidden = false;
+      status.textContent =
+        'Current prices cannot load. Please contact ' +
+        'Boris for a quote; online request generation ' +
+        'is paused.';
+    }
+  }
+
+  lock(true);
+  sync();
+
+  setInterval(sync,60000);
+  window.addEventListener('focus',sync);
+
+  document.addEventListener('click',event => {
+    if (
+      event.target instanceof Element &&
+      event.target.closest('.neo-option')
+    ) {
+      queueMicrotask(paint);
+    }
+  });
+})();
+</script>
 
 </body>
 </html>
