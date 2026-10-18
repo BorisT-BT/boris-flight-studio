@@ -4785,6 +4785,424 @@ document.querySelectorAll(".drone .product")
   }
 }
 </style>
+<style>
+.bfs-film-button {
+  display: block;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #080b10;
+  cursor: pointer;
+  color: white;
+}
+
+.bfs-film-button img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+.bfs-film-button span {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  background: #0003;
+  font: 600 18px Arial, sans-serif;
+  text-shadow: 0 2px 10px #000;
+}
+
+#bfsCinema {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: #020509f5;
+  color: white;
+  overflow: hidden;
+}
+
+#bfsCinema[open] {
+  display: grid;
+  place-items: center;
+}
+
+#bfsCinema::backdrop {
+  background: black;
+}
+
+#bfsCinema .bfs-stage {
+  position: relative;
+  width: min(92vw, 130dvh, 1440px);
+  aspect-ratio: 16 / 9;
+  background: #000 center / cover no-repeat;
+  transform-origin: top left;
+  box-shadow: 0 30px 100px #000;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+#bfsCinema iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+#bfsCinema .bfs-close {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  z-index: 2;
+  border: 1px solid #ffffff60;
+  border-radius: 999px;
+  background: #131923;
+  color: white;
+  padding: 12px 18px;
+  cursor: pointer;
+  font: 600 14px Arial, sans-serif;
+}
+
+#bfsCinema .bfs-help {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  text-align: center;
+  font: 13px/1.5 Arial, sans-serif;
+  color: #c6d1de;
+  margin: 0;
+}
+
+#bfsCinema .bfs-help a {
+  color: white;
+  text-decoration: underline;
+}
+</style>
+
+<script>
+(() => {
+  if (document.getElementById("bfsCinema")) return;
+
+  const neo = "1mXwci-_uWc";
+
+  const modal = document.createElement("dialog");
+  modal.id = "bfsCinema";
+  modal.setAttribute(
+    "aria-label",
+    "Cinematic DJI trailer"
+  );
+
+  modal.innerHTML = `
+    <button
+      type="button"
+      class="bfs-close"
+      aria-label="Close trailer"
+    >Close ×</button>
+
+    <div class="bfs-stage"></div>
+
+    <p class="bfs-help"></p>
+  `;
+
+  document.body.append(modal);
+
+  const stage = modal.querySelector(".bfs-stage");
+  const help = modal.querySelector(".bfs-help");
+
+  let animation = null;
+  let audio = null;
+  let generation = 0;
+  let previousOverflow = "";
+  let opener = null;
+  let active = false;
+
+  function whoosh(seconds) {
+    try {
+      const Context =
+        window.AudioContext ||
+        window.webkitAudioContext;
+
+      if (!Context) return;
+
+      audio = new Context();
+      audio.resume().catch(() => {});
+
+      const buffer = audio.createBuffer(
+        1,
+        Math.ceil(audio.sampleRate * seconds),
+        audio.sampleRate
+      );
+
+      const data = buffer.getChannelData(0);
+
+      for (let i = 0; i < data.length; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+
+      const noise = audio.createBufferSource();
+      noise.buffer = buffer;
+
+      const filter = audio.createBiquadFilter();
+      filter.type = "bandpass";
+      filter.Q.value = 0.7;
+
+      const gain = audio.createGain();
+      const t = audio.currentTime;
+
+      filter.frequency.setValueAtTime(180, t);
+
+      filter.frequency.exponentialRampToValueAtTime(
+        2400,
+        t + seconds * 0.8
+      );
+
+      gain.gain.setValueAtTime(0.001, t);
+
+      gain.gain.exponentialRampToValueAtTime(
+        0.1,
+        t + seconds * 0.75
+      );
+
+      gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        t + seconds
+      );
+
+noise.connect(filter);
+      filter.connect(gain);
+      gain.connect(audio.destination);
+
+      noise.start(t);
+      noise.stop(t + seconds);
+    } catch (error) {
+      console.warn(
+        "Cinematic sound unavailable:",
+        error
+      );
+    }
+  }
+
+  function cleanup() {
+    if (!active) return;
+    active = false;
+
+    generation++;
+
+    if (animation) {
+      animation.cancel();
+      animation = null;
+    }
+
+    stage.replaceChildren();
+    stage.style.backgroundImage = "none";
+
+    if (audio) {
+      audio.close().catch(() => {});
+      audio = null;
+    }
+
+    document.documentElement.style.overflow =
+      previousOverflow;
+
+    if (opener?.isConnected) {
+      opener.focus({ preventScroll: true });
+    }
+  }
+
+  function closeFilm() {
+    cleanup();
+    modal.close();
+  }
+
+  modal.addEventListener("close", cleanup);
+
+  modal.addEventListener("cancel", event => {
+    event.preventDefault();
+    closeFilm();
+  });
+
+  modal.querySelector(".bfs-close").onclick =
+    closeFilm;
+
+  modal.addEventListener("click", event => {
+    if (event.target === modal) closeFilm();
+  });
+
+  async function openFilm(button, id) {
+    if (modal.open) return;
+
+    active = true;
+    const token = ++generation;
+
+    opener = button;
+
+    const from = button.getBoundingClientRect();
+
+    previousOverflow =
+      document.documentElement.style.overflow;
+
+    document.documentElement.style.overflow =
+      "hidden";
+
+    stage.style.backgroundImage =
+      `url(https://i.ytimg.com/vi/${id}/hqdefault.jpg)`;
+
+    help.textContent =
+      "Opening the official DJI film…";
+
+    modal.showModal();
+
+    const reduced = matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    const duration = reduced ? 0 : 2600;
+
+    if (duration) {
+      whoosh(duration / 1000);
+
+      const to = stage.getBoundingClientRect();
+
+      animation = stage.animate(
+        [
+          {
+            transform:
+              `translate(` +
+              `${from.left - to.left}px,` +
+              `${from.top - to.top}px) ` +
+              `scale(` +
+              `${from.width / to.width},` +
+              `${from.height / to.height})`
+          },
+          {
+            transform: "none"
+          }
+        ],
+        {
+          duration,
+          easing: "cubic-bezier(.45,0,.2,1)"
+        }
+      );
+
+      try {
+        await animation.finished;
+      } catch (error) {
+        return;
+      }
+    }
+
+    if (
+      token !== generation ||
+      !modal.open
+    ) return;
+
+    const frame = document.createElement("iframe");
+
+    frame.title = "Official DJI trailer";
+
+    frame.allow =
+      "autoplay; encrypted-media; " +
+      "fullscreen; picture-in-picture";
+
+    frame.allowFullscreen = true;
+
+    frame.referrerPolicy =
+      "strict-origin-when-cross-origin";
+
+    frame.src =
+      `https://www.youtube.com/embed/${id}` +
+      "?autoplay=1&playsinline=1&rel=0";
+
+    stage.append(frame);
+
+    help.replaceChildren(
+      document.createTextNode(
+        "If playback pauses, press Play inside the video. "
+      )
+    );
+
+    const link = document.createElement("a");
+
+    link.href =
+      `https://www.youtube.com/watch?v=${id}`;
+
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = "Open on YouTube ↗️";
+
+    help.append(link);
+  }
+
+  // Keep each drone's own trailer.
+  // Replace inline players with cinematic launch buttons.
+  document.querySelectorAll(
+    ".official-video-slot iframe"
+  ).forEach(frame => {
+    const match = frame.src.match(
+      /\/embed\/([\w-]{11})/
+    );
+
+    if (!match) return;
+
+    const id = match[1];
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "bfs-film-button";
+    button.dataset.bfsFilm = id;
+
+    button.setAttribute(
+      "aria-label",
+      "Play official trailer with cinematic zoom"
+    );
+
+    const poster = document.createElement("img");
+    poster.src =
+      `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+    poster.alt = "Official DJI trailer";
+
+const label = document.createElement("span");
+    label.textContent = "▶️ Play cinematic trailer";
+
+    button.append(poster, label);
+    frame.replaceWith(button);
+  });
+
+  // Restore cinematic playback to the Neo 2 gallery link.
+  document.querySelectorAll("a.neo-watch")
+    .forEach(link => {
+      link.dataset.bfsFilm = neo;
+      link.textContent = "▶️ Watch cinematic trailer";
+    });
+
+  window.addEventListener("click", event => {
+    const button =
+      event.target instanceof Element
+        ? event.target.closest("[data-bfs-film]")
+        : null;
+
+    if (!button) return;
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    openFilm(button, button.dataset.bfsFilm);
+  }, true);
+})();
+</script>
 
 </body>
 </html>
